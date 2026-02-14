@@ -649,260 +649,78 @@ def render_prediction_section(result: Dict, birth_data: Dict, lang: dict, lang_c
     month = birth_data["month"]
     day = birth_data["day"]
     
-    # Create prediction sub-tabs
+    # Create prediction sub-tabs - Daily/Weekly/Monthly/Yearly
     pred_tabs = st.tabs([
-        "🔮 " + lang.get("birth_chart_reading", "Birth Chart Reading"),
-        lang.get("tab_sun", "☀️ Sun Sign"),
-        lang.get("tab_moon", "🌙 Moon Sign"),
-        lang.get("tab_rising", "↑ Rising Sign"),
-        lang.get("tab_planetary", "🪐 Planetary")
+        "📅 " + lang.get("daily_fortune", "Daily"),
+        "📆 " + lang.get("monthly_outlook", "Monthly"),
+        "📊 " + lang.get("yearly_outlook", "Yearly"),
     ])
     
-    # ===== TAB 1: BIRTH CHART READING (Destiny) =====
+    # ===== TAB 1: DAILY FORTUNE =====
     with pred_tabs[0]:
-        st.subheader("🔮 " + lang.get("birth_chart_reading", "Birth Chart Reading"))
+        st.subheader("📅 " + lang.get("daily_fortune", "Daily Fortune"))
         
-        with st.spinner("Generating your destiny reading..."):
-            reading = generate_birth_chart_reading(planets, houses, asc, aspects, lang_code)
+        with st.spinner("Reading your daily fortune..."):
+            fortune = generate_daily_fortune(planets, asc, birth_data["timezone"], lang_code)
             
-            for section in reading["sections"]:
-                if section.get("title"):
-                    st.markdown(f"### {section['title']}")
-                
-                # Display planet meanings
-                if "planets" in section:
-                    for p in section["planets"]:
-                        st.markdown(f"**{p['name']} in {p['sign']}**")
-                        meaning = p.get("meaning", {})
-                        core = meaning.get("core", "")
-                        if core:
-                            st.write(core)
-                        strengths = meaning.get("strengths", "")
-                        if strengths:
-                            st.caption(f"✨ {lang.get('strengths', 'Strengths')}: {strengths}")
-                        challenges = meaning.get("challenges", "")
-                        if challenges:
-                            st.caption(f"⚠️ {lang.get('challenges', 'Challenges')}: {challenges}")
-                        st.markdown("")
-                
-                # Display life theme
-                if section.get("theme"):
-                    st.info(f"✨ **{lang.get('life_theme', 'Your Life Theme')}**: {section['theme']}")
-                
-                # Display aspects
-                if "aspects" in section:
-                    for asp in section["aspects"][:5]:  # Limit to 5
-                        st.markdown(f"**{asp['p1']}** {asp['type']} **{asp['p2']}**")
-                        if asp.get("meaning"):
-                            st.write(asp["meaning"])
-                        st.markdown("")
+            overview_label = lang.get('today_overview', "Today's Overview")
+            st.markdown(f"### {overview_label}")
+            st.write(fortune["overview"])
+            
+            # Lucky elements
+            lucky = fortune.get("lucky", {})
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric(f"🎨 {lang.get('color', 'Color')}", lucky.get("color", "-"))
+            with col2:
+                st.metric(f"🔢 {lang.get('number', 'Number')}", lucky.get("number", "-"))
+            with col3:
+                st.metric(f"📅 {lang.get('lucky_day', 'Lucky Day')}", lucky.get("day", "-"))
+            with col4:
+                st.metric(f"💫 {lang.get('element_dominant', 'Element')}", lucky.get("element", "-"))
+            
+            # Key transits
+            st.markdown(f"### {lang.get('key_transits', 'Key Transits')}")
+            for t in fortune.get("transits", [])[:5]:
+                st.markdown(f"**{t['planet']}** in {t['sign']} {t['degree']}")
+                if t.get("meaning"):
+                    st.caption(t["meaning"])
     
-    # ===== TAB 2: SUN SIGN =====
+    # ===== TAB 2: MONTHLY =====
     with pred_tabs[1]:
-        st.subheader(lang.get("tab_sun", "☀️ Sun Sign"))
+        st.subheader("📆 " + lang.get("monthly_outlook", "Monthly Outlook"))
         
-        # Get Sun sign
-        sun = planets.get("Sun", {})
-        sun_sign = sun.get("sign", "Aries")
-        sun_data = WESTERN_SIGNS.get(sun_sign, {})
-        
-        # Get traits based on language
-        if lang_code == "th":
-            sun_traits = sun_data.get("traits_th", "")
-            sun_element = sun_data.get("element", "Fire")
-            sun_quality = sun_data.get("quality", "Cardinal")
-        else:
-            sun_traits = sun_data.get("traits_en", "")
-            sun_element = sun_data.get("element", "Fire")
-            sun_quality = sun_data.get("quality", "Cardinal")
-        
-        ruler = sun_data.get("ruler", "Mars")
-        
-        st.markdown(f"""
-### ☀️ {sun_sign} ({ruler} rules)
-**Element:** {sun_element} | **Quality:** {sun_quality}
-
-**Traits:** {sun_traits}
-""")
-        
-        # Sun sign reading
-        st.markdown("---")
-        render_western_prediction(planets, asc, lang, lang_code)
+        with st.spinner("Generating monthly outlook..."):
+            now = datetime.now()
+            monthly = generate_monthly_outlook(planets, asc, now.year, now.month, birth_data["timezone"], lang_code)
+            
+            st.markdown(f"### {lang.get('month_theme', 'Monthly Theme')}")
+            st.write(monthly.get("theme", ""))
+            
+            st.markdown(f"### {lang.get('highlights', 'Highlights')}")
+            for h in monthly.get("highlights", []):
+                st.markdown(f"• {h}")
+            
+            st.markdown(f"### {lang.get('advice', 'Advice')}")
+            st.write(monthly.get("advice", ""))
     
-    # ===== TAB 3: MOON SIGN =====
+    # ===== TAB 3: YEARLY =====
     with pred_tabs[2]:
-        st.subheader(lang.get("tab_moon", "🌙 Moon Sign"))
+        st.subheader("📊 " + lang.get("yearly_outlook", "Yearly Outlook"))
         
-        # Get Moon sign
-        moon = planets.get("Moon", {})
-        moon_sign = moon.get("sign", "Cancer")
-        moon_data = WESTERN_SIGNS.get(moon_sign, {})
-        
-        if lang_code == "th":
-            moon_traits = moon_data.get("traits_th", "")
-            moon_element = moon_data.get("element", "Water")
-        else:
-            moon_traits = moon_data.get("traits_en", "")
-            moon_element = moon_data.get("element", "Water")
-        
-        st.markdown(f"""
-### 🌙 {moon_sign} (Ruled by Moon)
-**Element:** {moon_element}
-
-**Traits:** {moon_traits}
-""")
-        
-        # Moon sign meaning
-        st.markdown("---")
-        st.markdown("#### 🌙 " + lang.get("moon_sign_reading", "Moon Sign Reading"))
-        if lang_code == "th":
-            st.write(f"ดวงจันทร์ใน{round(len(moon_sign), 0) if len(moon_sign) > 0 else 'Cancer'} แสดงถึงอารมณ์และความต้องการภายในของคุณ คุณมีความรู้สึกอ่อนไหวและใส่ใจคนรอบข้าง")
-        else:
-            st.write(f"Your Moon in {moon_sign} reveals your emotional nature and inner needs. You are sensitive and caring, with strong instincts.")
-    
-    # ===== TAB 4: RISING SIGN =====
-    with pred_tabs[3]:
-        st.subheader(lang.get("tab_rising", "↑ Rising Sign"))
-        
-        asc_sign = asc.get("sign", "Aries")
-        asc_data = WESTERN_SIGNS.get(asc_sign, {})
-        
-        if lang_code == "th":
-            asc_traits = asc_data.get("traits_th", "")
-            asc_element = asc_data.get("element", "Fire")
-        else:
-            asc_traits = asc_data.get("traits_en", "")
-            asc_element = asc_data.get("element", "Fire")
-        
-        st.markdown(f"""
-### ↑ {asc_sign} (Rising Sign)
-**Element:** {asc_element}
-
-**Traits:** {asc_traits}
-""")
-        
-        # Rising sign meaning
-        st.markdown("---")
-        st.markdown("#### ↑ " + lang.get("rising_sign_reading", "Rising Sign Reading"))
-        if lang_code == "th":
-            st.write(f"ราศีขึ้น (Ascendant) ใน{asc_sign} แสดงถึงภาพลักษณ์ที่คุณแสดงออกต่อโลกภายนอก คนอื่นมักจะเห็นคุณในแบบที่คุณปรากฏตัว")
-        else:
-            st.write(f"Your Rising Sign (Ascendant) in {asc_sign} represents how you appear to others and your first impression. It's your outer self and social mask.")
-    
-    # ===== TAB 5: PLANETARY POSITIONS =====
-    with pred_tabs[4]:
-        st.subheader(lang.get("tab_planetary", "🪐 Planetary Positions"))
-        
-        # Show all planetary positions in a clean list
-        planet_order = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", 
-                        "Saturn", "Uranus", "Neptune", "Pluto", "North Node", "South Node"]
-        
-        # Use columns for planet positions
-        cols = st.columns(3)
-        
-        for i, planet in enumerate(planet_order):
-            if planet in planets:
-                p = planets[planet]
-                with cols[i % 3]:
-                    retro = " (R)" if p.get("retrograde") else ""
-                    st.metric(f"🪐 {planet}", f"{p['sign']} {p['degree']:.1f}°{retro}")
-        
-        # Also show as a table
-        st.markdown("---")
-        st.markdown("#### 📋 " + lang.get("chart_details", "Chart Details"))
-        
-        data = []
-        for planet in planet_order:
-            if planet in planets:
-                p = planets[planet]
-                retro = "Yes" if p.get("retrograde") else "No"
-                data.append({"Planet": planet, "Sign": p["sign"], "Degree": f"{p['degree']:.1f}°", "Retrograde": retro})
-        
-        st.table(data)
-    
-    st.markdown("---")
-    
-    # ===== DAILY FORTUNE (below sub-tabs) =====
-    st.subheader("📅 " + lang.get("daily_fortune", "Daily Fortune"))
-    
-    with st.spinner("Reading your daily fortune..."):
-        fortune = generate_daily_fortune(planets, asc, birth_data["timezone"], lang_code)
-        
-        # Today's overview
-        overview_label = lang.get('today_overview', "Today's Overview")
-        st.markdown(f"### {overview_label}")
-        st.write(fortune["overview"])
-        
-        # Lucky elements
-        lucky = fortune.get("lucky", {})
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.metric(f"🎨 {lang.get('color', 'Color')}", lucky.get("color", "-"))
-        with col2:
-            st.metric(f"🔢 {lang.get('number', 'Number')}", lucky.get("number", "-"))
-        with col3:
-            st.metric(f"📅 {lang.get('lucky_day', 'Lucky Day')}", lucky.get("day", "-"))
-        with col4:
-            st.metric(f"💫 {lang.get('element_dominant', 'Element')}", lucky.get("element", "-"))
-        
-        # Key transits
-        st.markdown(f"### {lang.get('key_transits', 'Key Transits')}")
-        for t in fortune.get("transits", [])[:5]:
-            st.markdown(f"**{t['planet']}** in {t['sign']} {t['degree']}")
-            if t.get("meaning"):
-                st.caption(t["meaning"])
-        
-        # Transit aspects
-        st.markdown(f"### {lang.get('transit_aspects', 'Transit Aspects')}")
-        for asp in fortune.get("aspects", [])[:3]:
-            st.markdown(f"🔗 **{asp['transiting']}** {asp['type']} **{asp['natal']}**")
-    
-    # ===== MONTHLY OUTLOOK =====
-    st.markdown("---")
-    st.subheader("📆 " + lang.get("monthly_outlook", "Monthly Outlook"))
-    
-    now = datetime.now()
-    with st.spinner("Generating monthly outlook..."):
-        monthly = generate_monthly_outlook(planets, asc, now.year, now.month, birth_data["timezone"], lang_code)
-        
-        st.write(monthly.get("overview", ""))
-        
-        # Monthly themes
-        st.markdown(f"### {lang.get('month_theme', 'Monthly Theme')}")
-        for theme in monthly.get("themes", [])[:4]:
-            st.markdown(f"**{theme['planet']}** in {theme['sign']} ({theme['element']})")
-            if theme.get("meaning"):
-                st.caption(theme["meaning"])
-        
-        # Highlights
-        st.markdown(f"### {lang.get('highlights', 'Highlights')}")
-        for h in monthly.get("highlights", []):
-            st.markdown(f"• {h.get('aspect', '')}")
-        
-        # Advice
-        if monthly.get("advice"):
-            st.info(f"💡 **{lang.get('advice', 'Advice')}**: {monthly['advice']}")
-    
-    # ===== YEARLY OUTLOOK =====
-    st.markdown("---")
-    st.subheader("📅 " + lang.get("yearly_outlook", "Yearly Outlook"))
-    
-    with st.spinner("Generating yearly outlook..."):
-        yearly = generate_yearly_outlook(planets, asc, now.year, birth_data["timezone"], lang_code)
-        
-        st.write(yearly.get("overview", ""))
-        
-        # Major transits
-        st.markdown(f"### {lang.get('major_transits', 'Major Transits')}")
-        for t in yearly.get("major_transits", []):
-            st.markdown(f"**{t['planet']}** in {t['sign']}: {t['meaning']}")
-        
-        # Quarterly overview
-        st.markdown(f"### {lang.get('quarters', 'Quarterly Overview')}")
-        for q in yearly.get("quarters", []):
-            st.markdown(f"**{q['quarter']}** ({q['month']}): {q.get('theme', '')}")
-    
-    st.markdown("---")
+        with st.spinner("Generating yearly outlook..."):
+            now = datetime.now()
+            yearly = generate_yearly_outlook(planets, asc, now.year, birth_data["timezone"], lang_code)
+            
+            st.markdown(f"### {lang.get('yearly_outlook', 'Yearly Outlook')} {now.year}")
+            st.write(yearly.get("overview", ""))
+            
+            st.markdown(f"### {lang.get('quarters', 'Quarterly Overview')}")
+            for q in yearly.get("quarters", []):
+                st.markdown(f"**{q.get('period', '')}**: {q.get('theme', '')}")
+            
+            st.markdown(f"### {lang.get('advice', 'Advice')}")
+            st.write(yearly.get("advice", ""))
     
     # Thai prediction (if Thai lang)
     if lang_code == "th":
