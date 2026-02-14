@@ -384,6 +384,11 @@ def render_birth_chart(result: Dict, lang: dict):
             st.metric(f"{emoji} {elem}", f"{count}/10")
     
     # Show bar chart below
+    import pandas as pd
+    elem_df = pd.DataFrame({
+        "Element": ["Fire 🔥", "Earth 🌍", "Air 💨", "Water 💧"],
+        "Count": [elements["Fire"], elements["Earth"], elements["Air"], elements["Water"]]
+    }).set_index("Element")
     st.bar_chart(elem_df, horizontal=True, color=["#FF6B6B", "#8B7355", "#87CEEB", "#4ECDC4"])
     
     # Quick summary
@@ -525,12 +530,11 @@ def calculate_synastry_compatibility(result1: Dict, result2: Dict, lang: dict, l
     col1, col2 = st.columns(2)
     with col1:
         st.markdown(f"#### {lang.get('element_compatibility', 'Element Compatibility')}")
-        elem_df = {
-            "🔥 Fire": combined_elements["Fire"],
-            "🌍 Earth": combined_elements["Earth"],
-            "💨 Air": combined_elements["Air"],
-            "💧 Water": combined_elements["Water"]
-        }
+        import pandas as pd
+        elem_df = pd.DataFrame({
+            "Element": ["Fire 🔥", "Earth 🌍", "Air 💨", "Water 💧"],
+            "Count": [combined_elements["Fire"], combined_elements["Earth"], combined_elements["Air"], combined_elements["Water"]]
+        }).set_index("Element")
         st.bar_chart(elem_df, horizontal=True, color=["#FF6B6B", "#8B7355", "#87CEEB", "#4ECDC4"])
     
     with col2:
