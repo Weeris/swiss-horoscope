@@ -159,7 +159,7 @@ def render_header(lang: dict):
     st.markdown(f"*{lang['subtitle']}*")
 
 
-def render_birth_input(lang: dict, key_prefix: str = "") -> Optional[Dict]:
+def render_birth_input(lang: dict, lang_code: str = "en", key_prefix: str = "") -> Optional[Dict]:
     """Render birth information input form"""
     st.subheader(lang["birth_info"])
     
@@ -311,7 +311,7 @@ def main():
     render_header(lang)
     
     # Birth input
-    birth_data = render_birth_input(lang)
+    birth_data = render_birth_input(lang, lang_code)
     
     # Calculate button
     if st.button(lang["calculate"], type="primary"):
