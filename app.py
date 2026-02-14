@@ -524,47 +524,30 @@ def calculate_synastry_compatibility(result1: Dict, result2: Dict, lang: dict, l
             compat_score -= 5
             st.warning(f"💧🔥 {challenging} - Fire and Water need conscious balance.")
     
-    # Display compatibility results
+    # Display compatibility results - simplified
     st.markdown("---")
     
-    # Element distribution comparison
+    # Score and elements in columns
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown(f"#### {lang.get('element_compatibility', 'Element Compatibility')}")
-        import pandas as pd
-        elem_df = pd.DataFrame({
-            "Element": ["Fire 🔥", "Earth 🌍", "Air 💨", "Water 💧"],
-            "Count": [combined_elements["Fire"], combined_elements["Earth"], combined_elements["Air"], combined_elements["Water"]]
-        }).set_index("Element")
-        st.bar_chart(elem_df)
+        final_score = min(compat_score, 99)
+        st.metric("💕 Compatibility", f"{final_score}%")
+        # Show element summary
+        elem_summary = ", ".join([f"{e}:{c}" for e, c in combined_elements.items() if c > 0])
+        st.caption(f"Elements: {elem_summary}")
     
     with col2:
-        st.markdown(f"#### {lang.get('compatibility_percentage', 'Compatibility %')}")
-        final_score = min(compat_score, 99)
-        st.metric("Overall Score", f"{final_score}%")
-        
-        # Show key aspects
-        st.markdown(f"#### {lang.get('key_aspects', 'Key Aspects')}")
-        
-        # Sun-Moon (emotional foundation)
+        # Key aspects - cleaner display
+        aspects_list = []
         if "Sun" in planets1 and "Moon" in planets2:
-            st.write(f"☀️ **{planets1['Sun']}** + 🌙 **{planets2['Moon']}**")
-            st.caption("Sun-Moon: Emotional foundation")
-        
-        # Venus-Mars (attraction)
+            aspects_list.append(f"☀️+🌙")
         if "Venus" in planets1 and "Mars" in planets2:
-            st.write(f"♀️ **{planets1['Venus']}** + ♂️ **{planets2['Mars']}**")
-            st.caption("Venus-Mars: Attraction & passion")
-        
-        # Moon-Moon (emotional compatibility)
+            aspects_list.append(f"♀️+♂️")
         if "Moon" in planets1 and "Moon" in planets2:
-            st.write(f"🌙 **{planets1['Moon']}** + 🌙 **{planets2['Moon']}**")
-            st.caption("Moon-Moon: Emotional harmony")
+            aspects_list.append(f"🌙+🌙")
         
-        # Venus-Venus (love values)
-        if "Venus" in planets1 and "Venus" in planets2:
-            st.write(f"♀️ **{planets1['Venus']}** + ♀️ **{planets2['Venus']}**")
-            st.caption("Venus-Venus: Love values alignment")
+        if aspects_list:
+            st.write("**Key Aspects:** " + " | ".join(aspects_list))
     
     return {"score": final_score, "elements": combined_elements}
 
@@ -1172,34 +1155,23 @@ def main():
                                 compat_score += 10
                                 st.info("⚖️ " + lang.get("balanced_match", "Balanced") + " - Complementary energies.")
                             
-                            # Key aspects analysis
-                            st.markdown("#### " + lang.get("key_aspects_label", "Key Planetary Aspects"))
-                            
-                            key_pairs = [
-                                ("Sun", "Moon", "sun_moon"),
-                                ("Venus", "Mars", "venus_mars"),
-                                ("Sun", "Venus", "sun_venus"),
-                                ("Moon", "Mars", "moon_mars"),
-                                ("Moon", "Venus", "moon_venus")
-                            ]
-                            
-                            for p1, p2, key in key_pairs:
-                                if p1 in planets1 and p2 in planets2:
-                                    st.write(f"**{p1} ({planets1[p1]})** + **{p2} ({planets2[p2]})**")
+                            # Key aspects - simplified
+                            aspects_list = []
+                            if "Sun" in planets1 and "Moon" in planets2:
+                                aspects_list.append(f"☀️+🌙 ({planets1['Sun']}→{planets2['Moon']})")
+                            if "Venus" in planets1 and "Mars" in planets2:
+                                aspects_list.append(f"♀️+♂️ ({planets1['Venus']}→{planets2['Mars']})")
+                            if "Moon" in planets1 and "Venus" in planets2:
+                                aspects_list.append(f"🌙+♀️ ({planets1['Moon']}→{planets2['Venus']})")
                             
                             # Compatibility percentage
                             st.markdown("---")
-                            col1, col2, col3 = st.columns(3)
+                            col1, col2 = st.columns(2)
                             with col1:
-                                st.metric(lang.get("compatibility_percentage", "Compatibility"), f"{min(compat_score, 99)}%")
+                                st.metric("💕 " + lang.get("compatibility_percentage", "Compatibility"), f"{min(compat_score, 99)}%")
                             with col2:
-                                # Sun-Moon aspect (emotional foundation)
-                                if "Sun" in planets1 and "Moon" in planets2:
-                                    st.metric("Sun-Moon", f"{planets1['Sun']} → {planets2['Moon']}")
-                            with col3:
-                                # Venus-Mars aspect (attraction)
-                                if "Venus" in planets1 and "Mars" in planets2:
-                                    st.metric("Venus-Mars", f"{planets1['Venus']} → {planets2['Mars']}")
+                                if aspects_list:
+                                    st.write("**Aspects:** " + " | ".join(aspects_list))
                                     
                     except Exception as e:
                         st.error(f"Error: {str(e)}")
