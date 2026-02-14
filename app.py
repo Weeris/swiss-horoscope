@@ -756,25 +756,33 @@ def render_prediction_section(result: Dict, birth_data: Dict, lang: dict, lang_c
             
             # Overview
             st.markdown(f"### {lang.get('month_theme', 'Monthly Theme')}")
-            st.write(monthly.get("theme", ""))
+            st.markdown(f"**{monthly.get('month', '')}**")
             
             # Key planetary movements this month
             themes = monthly.get("themes", [])
             if themes:
                 st.markdown(f"### 🪐 {lang.get('key_transits', 'Key Transits')}")
-                cols = st.columns(3)
-                for i, t in enumerate(themes[:6]):
-                    with cols[i % 3]:
-                        st.metric(f"{t.get('planet', '')}", f"{t.get('sign', '')}", f"{t.get('element', '')}")
-                        if t.get("meaning"):
-                            st.caption(t["meaning"][:80] + "..." if len(t.get("meaning", "")) > 80 else t.get("meaning", ""))
+                for t in themes[:6]:
+                    sign = t.get('sign', '')
+                    planet = t.get('planet', '')
+                    element = t.get('element', '')
+                    meaning = t.get('meaning', '')
+                    with st.expander(f"**{planet}** in {sign} ({element})"):
+                        if meaning:
+                            st.write(meaning)
             
             # Highlights
             highlights = monthly.get("highlights", [])
             if highlights:
                 st.markdown(f"### ⭐ {lang.get('highlights', 'Highlights')}")
-                for h in highlights[:5]:
-                    st.markdown(f"• {h}")
+                for h in highlights:
+                    asp = h.get("aspect", "")
+                    desc = h.get("description", "")
+                    if asp and desc:
+                        with st.expander(f"🔹 {asp}"):
+                            st.write(desc)
+                    elif desc:
+                        st.markdown(f"- {desc}")
             
             # Advice
             st.markdown(f"### 💡 {lang.get('advice', 'Advice')}")
@@ -805,20 +813,13 @@ def render_prediction_section(result: Dict, birth_data: Dict, lang: dict, lang_c
             quarters = yearly.get("quarters", [])
             if quarters:
                 st.markdown(f"### 📈 {lang.get('quarters', 'Quarterly Overview')}")
-                
-                # Q1
-                q1 = [q for q in quarters if 'Q1' in q.get('period', '')]
-                if q1:
-                    st.markdown("**Q1 (Jan-Mar):** " + q1[0].get('theme', ''))
-                
-                # Q2
-                q2 = [q for q in quarters if 'Q2' in q.get('period', '')]
-                if q2:
-                    st.markdown("**Q2 (Apr-Jun):** " + q2[0].get('theme', ''))
-                
-                # Q3
-                q3 = [q for q in quarters if 'Q3' in q.get('period', '')]
-                if q3:
+                for q in quarters:
+                    period = q.get("quarter", "")
+                    jupiter = q.get("jupiter", "")
+                    saturn = q.get("saturn", "")
+                    theme = q.get("theme", "")
+                    with st.expander(f"**{period}** - Jupiter in {jupiter}, Saturn in {saturn}"):
+                        st.write(theme)
                     st.markdown("**Q3 (Jul-Sep):** " + q3[0].get('theme', ''))
                 
                 # Q4
