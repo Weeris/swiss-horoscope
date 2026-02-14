@@ -14,6 +14,7 @@ from core.chart_wheel import (
     create_synastry_chart
 )
 from core.birth_chart_reading import generate_birth_chart_reading
+from core.fortune_reader import generate_daily_fortune, generate_monthly_outlook, generate_yearly_outlook
 
 
 # ============== Page Config ==============
@@ -69,6 +70,21 @@ LANG = {
         "challenges": "Challenges",
         "core_identity": "Core Identity",
         "element_dominant": "Element Dominant",
+        "daily_fortune": "Daily Fortune",
+        "monthly_outlook": "Monthly Outlook",
+        "yearly_outlook": "Yearly Outlook",
+        "today_overview": "Today's Overview",
+        "key_transits": "Key Transits",
+        "transit_aspects": "Transit Aspects",
+        "lucky_elements": "Lucky Elements",
+        "color": "Color",
+        "number": "Number",
+        "lucky_day": "Lucky Day",
+        "month_theme": "Monthly Theme",
+        "highlights": "Highlights",
+        "advice": "Advice",
+        "major_transits": "Major Transits",
+        "quarters": "Quarterly Overview",
         "tab_transit": "🚀 Transits",
         "tab_synastry": "💕 Synastry",
         "chart_wheel": "Chart Wheel",
@@ -125,6 +141,21 @@ LANG = {
         "challenges": "ความท้าทาย",
         "core_identity": "ตัวตนหลัก",
         "element_dominant": "ธาตุที่โดดเด่น",
+        "daily_fortune": "ดวงประจำวัน",
+        "monthly_outlook": "ดวงประจำเดือน",
+        "yearly_outlook": "ดวงประจำปี",
+        "today_overview": "ภาพรวมวันนี้",
+        "key_transits": "ดาวเคราะห์สำคัญ",
+        "transit_aspects": "มุมดาวปัจจุบัน",
+        "lucky_elements": "องศาดี",
+        "color": "สี",
+        "number": "ตัวเลข",
+        "lucky_day": "วันดี",
+        "month_theme": "ธีมประจำเดือน",
+        "highlights": "ไฮไลท์",
+        "advice": "คำแนะนำ",
+        "major_transits": "ดาวเคราะห์หลัก",
+        "quarters": "ภาพรวมไตรมาส",
         "tab_transit": "🚀 ดาวเคราะห์ปัจจุบัน",
         "tab_synastry": "💕 ดวงคู่",
         "chart_wheel": "แผนภูมิดวงชะตา",
@@ -181,6 +212,21 @@ LANG = {
         "challenges": "挑战",
         "core_identity": "核心身份",
         "element_dominant": "主导元素",
+        "daily_fortune": "每日运势",
+        "monthly_outlook": "每月运势",
+        "yearly_outlook": "年度运势",
+        "today_overview": "今日概览",
+        "key_transits": "关键星象",
+        "transit_aspects": "推运相位",
+        "lucky_elements": "幸运元素",
+        "color": "颜色",
+        "number": "数字",
+        "lucky_day": "幸运日",
+        "month_theme": "月度主题",
+        "highlights": "亮点",
+        "advice": "建议",
+        "major_transits": "主要推运",
+        "quarters": "季度概览",
         "tab_transit": "🚀 推运",
         "tab_synastry": "💕 合盘",
         "chart_wheel": "星盘图",
@@ -550,6 +596,89 @@ def render_prediction_section(result: Dict, birth_data: Dict, lang: dict, lang_c
     
     # ===== WESTERN PREDICTION =====
     render_western_prediction(planets, asc, lang, lang_code)
+    
+    st.markdown("---")
+    
+    # ===== DAILY FORTUNE =====
+    st.markdown("---")
+    st.subheader("📅 " + lang.get("daily_fortune", "Daily Fortune"))
+    
+    with st.spinner("Reading your daily fortune..."):
+        fortune = generate_daily_fortune(planets, asc, birth_data["timezone"], lang_code)
+        
+        # Today's overview
+        overview_label = lang.get('today_overview', "Today's Overview")
+        st.markdown(f"### {overview_label}")
+        st.write(fortune["overview"])
+        
+        # Lucky elements
+        lucky = fortune.get("lucky", {})
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric(f"🎨 {lang.get('color', 'Color')}", lucky.get("color", "-"))
+        with col2:
+            st.metric(f"🔢 {lang.get('number', 'Number')}", lucky.get("number", "-"))
+        with col3:
+            st.metric(f"📅 {lang.get('lucky_day', 'Lucky Day')}", lucky.get("day", "-"))
+        with col4:
+            st.metric(f"💫 {lang.get('element_dominant', 'Element')}", lucky.get("element", "-"))
+        
+        # Key transits
+        st.markdown(f"### {lang.get('key_transits', 'Key Transits')}")
+        for t in fortune.get("transits", [])[:5]:
+            st.markdown(f"**{t['planet']}** in {t['sign']} {t['degree']}")
+            if t.get("meaning"):
+                st.caption(t["meaning"])
+        
+        # Transit aspects
+        st.markdown(f"### {lang.get('transit_aspects', 'Transit Aspects')}")
+        for asp in fortune.get("aspects", [])[:3]:
+            st.markdown(f"🔗 **{asp['transiting']}** {asp['type']} **{asp['natal']}**")
+    
+    # ===== MONTHLY OUTLOOK =====
+    st.markdown("---")
+    st.subheader("📆 " + lang.get("monthly_outlook", "Monthly Outlook"))
+    
+    now = datetime.now()
+    with st.spinner("Generating monthly outlook..."):
+        monthly = generate_monthly_outlook(planets, asc, now.year, now.month, birth_data["timezone"], lang_code)
+        
+        st.write(monthly.get("overview", ""))
+        
+        # Monthly themes
+        st.markdown(f"### {lang.get('month_theme', 'Monthly Theme')}")
+        for theme in monthly.get("themes", [])[:4]:
+            st.markdown(f"**{theme['planet']}** in {theme['sign']} ({theme['element']})")
+            if theme.get("meaning"):
+                st.caption(theme["meaning"])
+        
+        # Highlights
+        st.markdown(f"### {lang.get('highlights', 'Highlights')}")
+        for h in monthly.get("highlights", []):
+            st.markdown(f"• {h.get('aspect', '')}")
+        
+        # Advice
+        if monthly.get("advice"):
+            st.info(f"💡 **{lang.get('advice', 'Advice')}**: {monthly['advice']}")
+    
+    # ===== YEARLY OUTLOOK =====
+    st.markdown("---")
+    st.subheader("📅 " + lang.get("yearly_outlook", "Yearly Outlook"))
+    
+    with st.spinner("Generating yearly outlook..."):
+        yearly = generate_yearly_outlook(planets, asc, now.year, birth_data["timezone"], lang_code)
+        
+        st.write(yearly.get("overview", ""))
+        
+        # Major transits
+        st.markdown(f"### {lang.get('major_transits', 'Major Transits')}")
+        for t in yearly.get("major_transits", []):
+            st.markdown(f"**{t['planet']}** in {t['sign']}: {t['meaning']}")
+        
+        # Quarterly overview
+        st.markdown(f"### {lang.get('quarters', 'Quarterly Overview')}")
+        for q in yearly.get("quarters", []):
+            st.markdown(f"**{q['quarter']}** ({q['month']}): {q.get('theme', '')}")
     
     st.markdown("---")
     
