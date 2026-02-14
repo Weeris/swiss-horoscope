@@ -455,6 +455,115 @@ def calculate_elements(planets: Dict) -> Dict:
     return elements
 
 
+def calculate_synastry_compatibility(result1: Dict, result2: Dict, lang: dict, lang_code: str = "en"):
+    """Calculate compatibility between two charts"""
+    from collections import Counter
+    
+    planets1 = {p["name"]: p["sign"] for p in result1["planets"]}
+    planets2 = {p["name"]: p["sign"] for p in result2["planets"]}
+    
+    # Get elements for both charts
+    elements1 = [WESTERN_SIGNS.get(planets1.get(p, ""), {}).get("element", "") for p in planets1]
+    elements2 = [WESTERN_SIGNS.get(planets2.get(p, ""), {}).get("element", "") for p in planets2]
+    
+    elem1_count = Counter(elements1)
+    elem2_count = Counter(elements2)
+    
+    # Combined elements
+    combined_elements = {elem: elem1_count.get(elem, 0) + elem2_count.get(elem, 0) for elem in ["Fire", "Earth", "Air", "Water"]}
+    
+    # Compatibility score calculation
+    compat_score = 50  # Base score
+    
+    # Fire compatibility
+    fire_total = combined_elements.get("Fire", 0)
+    if fire_total >= 4:
+        compat_score += 20
+        fire_match = lang.get("strong_match", "Strong Match")
+        st.success(f"🔥 {fire_match} - Fire energy flows well together!")
+    elif fire_total >= 2:
+        compat_score += 10
+        st.info(f"🔥 {lang.get('balanced_match', 'Balanced')} - Good fire energy.")
+    
+    # Water compatibility
+    water_total = combined_elements.get("Water", 0)
+    if water_total >= 4:
+        compat_score += 15
+        st.success(f"💧 {lang.get('strong_match', 'Strong Match')} - Deep emotional connection!")
+    elif water_total >= 2:
+        compat_score += 10
+        st.info(f"💧 {lang.get('balanced_match', 'Balanced')} - Emotional harmony.")
+    
+    # Earth compatibility
+    earth_total = combined_elements.get("Earth", 0)
+    if earth_total >= 3:
+        compat_score += 15
+        st.success(f"🌍 {lang.get('strong_match', 'Strong Match')} - Stable and practical foundation!")
+    
+    # Air compatibility
+    air_total = combined_elements.get("Air", 0)
+    if air_total >= 4:
+        compat_score += 15
+        strong_match = lang.get("strong_match", "Strong Match")
+        st.success(f"💨 {strong_match} - Great mental connection!")
+    
+    # Fire + Water balance check
+    if fire_total > 0 and water_total > 0:
+        balanced = lang.get("balanced_match", "Balanced")
+        challenging = lang.get("challenging_match", "Challenging")
+        if abs(fire_total - water_total) <= 1:
+            compat_score += 10
+            st.info(f"⚖️ {balanced} - Fire and Water balance well.")
+        else:
+            compat_score -= 5
+            st.warning(f"💧🔥 {challenging} - Fire and Water need conscious balance.")
+    
+    # Display compatibility results
+    st.markdown("---")
+    
+    # Element distribution comparison
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown(f"#### {lang.get('element_compatibility', 'Element Compatibility')}")
+        elem_df = {
+            "🔥 Fire": combined_elements["Fire"],
+            "🌍 Earth": combined_elements["Earth"],
+            "💨 Air": combined_elements["Air"],
+            "💧 Water": combined_elements["Water"]
+        }
+        st.bar_chart(elem_df, horizontal=True, color=["#FF6B6B", "#8B7355", "#87CEEB", "#4ECDC4"])
+    
+    with col2:
+        st.markdown(f"#### {lang.get('compatibility_percentage', 'Compatibility %')}")
+        final_score = min(compat_score, 99)
+        st.metric("Overall Score", f"{final_score}%")
+        
+        # Show key aspects
+        st.markdown(f"#### {lang.get('key_aspects', 'Key Aspects')}")
+        
+        # Sun-Moon (emotional foundation)
+        if "Sun" in planets1 and "Moon" in planets2:
+            st.write(f"☀️ **{planets1['Sun']}** + 🌙 **{planets2['Moon']}**")
+            st.caption("Sun-Moon: Emotional foundation")
+        
+        # Venus-Mars (attraction)
+        if "Venus" in planets1 and "Mars" in planets2:
+            st.write(f"♀️ **{planets1['Venus']}** + ♂️ **{planets2['Mars']}**")
+            st.caption("Venus-Mars: Attraction & passion")
+        
+        # Moon-Moon (emotional compatibility)
+        if "Moon" in planets1 and "Moon" in planets2:
+            st.write(f"🌙 **{planets1['Moon']}** + 🌙 **{planets2['Moon']}**")
+            st.caption("Moon-Moon: Emotional harmony")
+        
+        # Venus-Venus (love values)
+        if "Venus" in planets1 and "Venus" in planets2:
+            st.write(f"♀️ **{planets1['Venus']}** + ♀️ **{planets2['Venus']}**")
+            st.caption("Venus-Venus: Love values alignment")
+    
+    return {"score": final_score, "elements": combined_elements}
+
+
 def get_chinese_zodiac(year: int) -> Dict:
     """Get Chinese zodiac for year"""
     cycle_year = (year - 4) % 12
