@@ -51,10 +51,6 @@ PLANET_DESCRIPTIONS = {
 }
 
 
-def normalize_angle(angle: float) -> float:
-    return angle % 360
-
-
 def degree_to_chart_coords(longitude: float, radius: float) -> tuple:
     """Convert zodiac longitude to chart coordinates (0° = right, counter-clockwise)"""
     angle = np.radians(90 - longitude)
@@ -95,41 +91,34 @@ def create_interactive_chart_wheel(
     house_radius = 0.85
     planet_radius = 0.55
     
-    # Draw sign segments
+    # Draw sign segments as wedges using shapes
     for i, sign in enumerate(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
                                'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces']):
         start_angle = 90 - i * 30
         end_angle = start_angle - 30
         
-        # Convert to radians for plotly (0° at right, clockwise)
-        theta1 = np.radians(start_angle)
-        theta2 = np.radians(end_angle)
-        
-        # Draw wedge
+        # Draw wedge using shapes (pie slices)
         fig.add_shape(
-            type="circle",
-            x0=outer_radius - (outer_radius - house_radius),
-            y0=outer_radius - (outer_radius - house_radius),
-            x1=outer_radius,
-            y1=outer_radius,
-            layer="below",
+            type="path",
+            path=f"M 0 0 L {outer_radius*np.cos(np.radians(start_angle))} {outer_radius*np.sin(np.radians(start_angle))} A {outer_radius} {outer_radius} 0 0 0 {outer_radius*np.cos(np.radians(end_angle))} {outer_radius*np.sin(np.radians(end_angle))} Z",
             fillcolor=SIGN_COLORS.get(sign, '#333'),
-            opacity=0.6,
-            xref="x", yref="y"
+            opacity=0.5,
+            line=dict(color='#2d2d44', width=1),
+            layer="below"
         )
         
-        # Sign glyph at center of each sign
+        # Sign glyph at center of each sign using scatter
         mid_angle = start_angle - 15
         glyph_x = (outer_radius - 0.05) * np.cos(np.radians(90 - mid_angle))
         glyph_y = (outer_radius - 0.05) * np.sin(np.radians(90 - mid_angle))
         
-        fig.add_annotation(
-            x=glyph_x, y=glyph_y,
-            text=SIGN_GLYPHS.get(sign, ''),
-            showarrow=False,
-            font=dict(size=12, color='white'),
-            xanchor='center', yanchor='center'
-        )
+        fig.add_trace(go.Scatter(
+            x=[glyph_x], y=[glyph_y],
+            mode='text',
+            text=[SIGN_GLYPHS.get(sign, '')],
+            textfont=dict(size=14, color='white'),
+            hoverinfo='skip'
+        ))
     
     # Draw outer circle
     theta_circle = np.linspace(0, 2*np.pi, 100)
@@ -151,7 +140,10 @@ def create_interactive_chart_wheel(
             hoverinfo='skip'
         ))
         
-        # House cusps
+        # House cusps and numbers
+        house_xs, house_ys = [], []
+        house_labels_x, house_labels_y, house_labels_text = [], [], []
+        
         for house_num in range(1, 13):
             if house_num in houses:
                 cusp = houses[house_num]
@@ -159,23 +151,34 @@ def create_interactive_chart_wheel(
                 x1, y1 = degree_to_chart_coords(long, house_radius)
                 x2, y2 = degree_to_chart_coords(long, outer_radius)
                 
-                fig.add_trace(go.Scatter(
-                    x=[x1, x2], y=[y1, y2],
-                    mode='lines',
-                    line=dict(color='#4a4a6a', width=1),
-                    hoverinfo='skip'
-                ))
+                house_xs.extend([x1, x2, None])
+                house_ys.extend([y1, y2, None])
                 
-                # House number
+                # House number position
                 mid_long = (long + 15) % 360
                 hx, hy = degree_to_chart_coords(mid_long, (house_radius + outer_radius) / 2)
-                fig.add_annotation(
-                    x=hx, y=hy,
-                    text=str(house_num),
-                    showarrow=False,
-                    font=dict(size=8, color='#888'),
-                    xanchor='center', yanchor='center'
-                )
+                house_labels_x.append(hx)
+                house_labels_y.append(hy)
+                house_labels_text.append(str(house_num))
+        
+        # Draw house lines
+        if house_xs:
+            fig.add_trace(go.Scatter(
+                x=house_xs, y=house_ys,
+                mode='lines',
+                line=dict(color='#4a4a6a', width=1),
+                hoverinfo='skip'
+            ))
+        
+        # Draw house numbers
+        if house_labels_x:
+            fig.add_trace(go.Scatter(
+                x=house_labels_x, y=house_labels_y,
+                mode='text',
+                text=house_labels_text,
+                textfont=dict(size=9, color='#888'),
+                hoverinfo='skip'
+            ))
     
     # Draw aspect lines
     if show_aspects and aspects:
@@ -190,22 +193,31 @@ def create_interactive_chart_wheel(
             'Sextile': '#95E1D3'
         }
         
+        aspect_xs, aspect_ys = [], []
+        
         for aspect in aspects[:15]:
             p1, p2 = aspect['p1'], aspect['p2']
             if p1 in planet_positions and p2 in planet_positions:
                 x1, y1 = planet_positions[p1]
                 x2, y2 = planet_positions[p2]
-                color = aspect_colors.get(aspect['type'], '#666')
                 
-                fig.add_trace(go.Scatter(
-                    x=[x1, x2], y=[y1, y2],
-                    mode='lines',
-                    line=dict(color=color, width=1.5),
-                    opacity=0.5,
-                    hoverinfo='skip'
-                ))
+                aspect_xs.extend([x1, x2, None])
+                aspect_ys.extend([y1, y2, None])
+        
+        if aspect_xs:
+            fig.add_trace(go.Scatter(
+                x=aspect_xs, y=aspect_ys,
+                mode='lines',
+                line=dict(color='#666', width=1),
+                opacity=0.4,
+                hoverinfo='skip'
+            ))
     
     # Draw planets
+    planet_xs, planet_ys = [], []
+    planet_glyphs, planet_colors = [], []
+    planet_hover, planet_texts = [], []
+    
     for planet, data in planets.items():
         long = data['longitude']
         sign = data.get('sign', 'Unknown')
@@ -216,71 +228,87 @@ def create_interactive_chart_wheel(
         
         x, y = degree_to_chart_coords(long, planet_radius)
         
-        # Get description
-        description = PLANET_DESCRIPTIONS.get(planet, 'Unknown planet')
-        sign_traits = {
-            'Fire': 'Bold, energetic, pioneering',
-            'Earth': 'Patient, reliable, practical', 
-            'Air': 'Curious, adaptable, communicative',
-            'Water': 'Intuitive, emotional, compassionate'
-        }
-        traits = sign_traits.get(element, '')
+        planet_xs.append(x)
+        planet_ys.append(y)
+        planet_glyphs.append(PLANET_GLYPHS.get(planet, '●'))
+        planet_colors.append(PLANET_COLORS.get(planet, '#888'))
         
         # Hover text
+        description = PLANET_DESCRIPTIONS.get(planet, 'Unknown planet')
         hover_text = f"<b>{planet}</b><br>"
         hover_text += f"Sign: {sign} ({element})<br>"
         hover_text += f"Degree: {int(degree)}°{int((degree % 1) * 60)}'<br>"
         hover_text += f"House: {house}<br>"
         hover_text += f"Retrograde: {'Yes' if is_retrograde else 'No'}<br>"
         hover_text += f"<br><i>{description}</i>"
-        
-        # Planet marker
-        glyph = PLANET_GLYPHS.get(planet, '●')
-        color = PLANET_COLORS.get(planet, '#888')
-        
+        planet_hover.append(hover_text)
+        planet_texts.append(planet)
+    
+    # Draw planets as markers with glyphs
+    if planet_xs:
+        # Planet circles
         fig.add_trace(go.Scatter(
-            x=[x], y=[y],
-            mode='markers+text',
-            marker=dict(size=30, color=color, line=dict(color='white', width=2)),
-            text=glyph,
-            textposition='middle center',
-            textfont=dict(size=14, color='black'),
-            hovertemplate=hover_text + "<extra></extra>",
-            name=planet
+            x=planet_xs, y=planet_ys,
+            mode='markers',
+            marker=dict(
+                size=28,
+                color=planet_colors,
+                line=dict(color='white', width=2)
+            ),
+            hovertemplate='%{customdata}<extra></extra>',
+            customdata=planet_hover,
+            name='Planets'
         ))
         
-        # Planet name label
-        name_x, name_y = degree_to_chart_coords(long, planet_radius - 0.12)
-        fig.add_annotation(
-            x=name_x, y=name_y,
-            text=planet,
-            showarrow=False,
-            font=dict(size=8, color='#ccc'),
-            xanchor='center', yanchor='center'
-        )
+        # Planet glyphs
+        fig.add_trace(go.Scatter(
+            x=planet_xs, y=planet_ys,
+            mode='text',
+            text=planet_glyphs,
+            textposition='middle center',
+            textfont=dict(size=14, color='black'),
+            hoverinfo='skip'
+        ))
+        
+        # Planet names
+        name_positions = []
+        for planet, data in planets.items():
+            long = data['longitude']
+            nx, ny = degree_to_chart_coords(long, planet_radius - 0.12)
+            name_positions.append((nx, ny, planet))
+        
+        if name_positions:
+            fig.add_trace(go.Scatter(
+                x=[p[0] for p in name_positions],
+                y=[p[1] for p in name_positions],
+                mode='text',
+                text=[p[2] for p in name_positions],
+                textfont=dict(size=8, color='#aaa'),
+                hoverinfo='skip'
+            ))
     
-    # ASC and MC markers
+    # ASC and MC markers using scatter
     if ascendant:
         asc_long = ascendant['longitude']
-        ax, ay = degree_to_chart_coords(asc_long, house_radius - 0.08)
-        fig.add_annotation(
-            x=ax, y=ay,
-            text="ASC",
-            showarrow=False,
-            font=dict(size=10, color='#00FF00', weight='bold'),
-            xanchor='center', yanchor='center'
-        )
+        ax, ay = degree_to_chart_coords(asc_long, house_radius - 0.1)
+        fig.add_trace(go.Scatter(
+            x=[ax], y=[ay],
+            mode='text',
+            text=['ASC'],
+            textfont=dict(size=10, color='#00FF00'),
+            hoverinfo='skip'
+        ))
     
     if midheaven:
         mc_long = midheaven['longitude']
-        mx, my = degree_to_chart_coords(mc_long, house_radius - 0.08)
-        fig.add_annotation(
-            x=mx, y=my,
-            text="MC",
-            showarrow=False,
-            font=dict(size=10, color='#FFD700', weight='bold'),
-            xanchor='center', yanchor='center'
-        )
+        mx, my = degree_to_chart_coords(mc_long, house_radius - 0.1)
+        fig.add_trace(go.Scatter(
+            x=[mx], y=[my],
+            mode='text',
+            text=['MC'],
+            textfont=dict(size=10, color='#FFD700'),
+            hoverinfo='skip'
+        ))
     
     # Title
     fig.update_layout(
