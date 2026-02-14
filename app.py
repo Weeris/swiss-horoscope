@@ -389,7 +389,7 @@ def render_birth_chart(result: Dict, lang: dict):
         "Element": ["Fire 🔥", "Earth 🌍", "Air 💨", "Water 💧"],
         "Count": [elements["Fire"], elements["Earth"], elements["Air"], elements["Water"]]
     }).set_index("Element")
-    st.bar_chart(elem_df, horizontal=True, color=["#FF6B6B", "#8B7355", "#87CEEB", "#4ECDC4"])
+    st.bar_chart(elem_df)
     
     # Quick summary
     dominant_element = max(elements, key=elements.get)
@@ -535,7 +535,7 @@ def calculate_synastry_compatibility(result1: Dict, result2: Dict, lang: dict, l
             "Element": ["Fire 🔥", "Earth 🌍", "Air 💨", "Water 💧"],
             "Count": [combined_elements["Fire"], combined_elements["Earth"], combined_elements["Air"], combined_elements["Water"]]
         }).set_index("Element")
-        st.bar_chart(elem_df, horizontal=True, color=["#FF6B6B", "#8B7355", "#87CEEB", "#4ECDC4"])
+        st.bar_chart(elem_df)
     
     with col2:
         st.markdown(f"#### {lang.get('compatibility_percentage', 'Compatibility %')}")
