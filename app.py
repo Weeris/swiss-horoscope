@@ -562,15 +562,31 @@ def render_prediction_section(result: Dict, birth_data: Dict, lang: dict, lang_c
             now = datetime.now()
             monthly = generate_monthly_outlook(planets, asc, now.year, now.month, birth_data["timezone"], lang_code)
             
+            # Overview
             st.markdown(f"### {lang.get('month_theme', 'Monthly Theme')}")
             st.write(monthly.get("theme", ""))
             
-            st.markdown(f"### {lang.get('highlights', 'Highlights')}")
-            for h in monthly.get("highlights", []):
-                st.markdown(f"• {h}")
+            # Key planetary movements this month
+            themes = monthly.get("themes", [])
+            if themes:
+                st.markdown(f"### 🪐 {lang.get('key_transits', 'Key Transits')}")
+                cols = st.columns(3)
+                for i, t in enumerate(themes[:6]):
+                    with cols[i % 3]:
+                        st.metric(f"{t.get('planet', '')}", f"{t.get('sign', '')}", f"{t.get('element', '')}")
+                        if t.get("meaning"):
+                            st.caption(t["meaning"][:80] + "..." if len(t.get("meaning", "")) > 80 else t.get("meaning", ""))
             
-            st.markdown(f"### {lang.get('advice', 'Advice')}")
-            st.write(monthly.get("advice", ""))
+            # Highlights
+            highlights = monthly.get("highlights", [])
+            if highlights:
+                st.markdown(f"### ⭐ {lang.get('highlights', 'Highlights')}")
+                for h in highlights[:5]:
+                    st.markdown(f"• {h}")
+            
+            # Advice
+            st.markdown(f"### 💡 {lang.get('advice', 'Advice')}")
+            st.info(monthly.get("advice", ""))
     
     # ===== TAB 3: YEARLY =====
     with pred_tabs[2]:
@@ -580,15 +596,47 @@ def render_prediction_section(result: Dict, birth_data: Dict, lang: dict, lang_c
             now = datetime.now()
             yearly = generate_yearly_outlook(planets, asc, now.year, birth_data["timezone"], lang_code)
             
-            st.markdown(f"### {lang.get('yearly_outlook', 'Yearly Outlook')} {now.year}")
+            # Overview
+            st.markdown(f"### 📅 {now.year} {lang.get('yearly_outlook', 'Yearly Outlook')}")
             st.write(yearly.get("overview", ""))
             
-            st.markdown(f"### {lang.get('quarters', 'Quarterly Overview')}")
-            for q in yearly.get("quarters", []):
-                st.markdown(f"**{q.get('period', '')}**: {q.get('theme', '')}")
+            # Major transits
+            major = yearly.get("major_transits", [])
+            if major:
+                st.markdown(f"### 🪐 {lang.get('major_transits', 'Major Transits')}")
+                cols = st.columns(4)
+                for i, t in enumerate(major[:8]):
+                    with cols[i % 4]:
+                        st.metric(f"{t.get('planet', '')}", f"{t.get('sign', '')}")
             
-            st.markdown(f"### {lang.get('advice', 'Advice')}")
-            st.write(yearly.get("advice", ""))
+            # Quarterly breakdown
+            quarters = yearly.get("quarters", [])
+            if quarters:
+                st.markdown(f"### 📈 {lang.get('quarters', 'Quarterly Overview')}")
+                
+                # Q1
+                q1 = [q for q in quarters if 'Q1' in q.get('period', '')]
+                if q1:
+                    st.markdown("**Q1 (Jan-Mar):** " + q1[0].get('theme', ''))
+                
+                # Q2
+                q2 = [q for q in quarters if 'Q2' in q.get('period', '')]
+                if q2:
+                    st.markdown("**Q2 (Apr-Jun):** " + q2[0].get('theme', ''))
+                
+                # Q3
+                q3 = [q for q in quarters if 'Q3' in q.get('period', '')]
+                if q3:
+                    st.markdown("**Q3 (Jul-Sep):** " + q3[0].get('theme', ''))
+                
+                # Q4
+                q4 = [q for q in quarters if 'Q4' in q.get('period', '')]
+                if q4:
+                    st.markdown("**Q4 (Oct-Dec):** " + q4[0].get('theme', ''))
+            
+            # Advice
+            st.markdown(f"### 💡 {lang.get('advice', 'Advice')}")
+            st.info(yearly.get("advice", ""))
     
     # Thai prediction (if Thai lang)
     if lang_code == "th":
