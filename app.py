@@ -13,6 +13,7 @@ from core.chart_wheel import (
     get_current_transits, create_transit_overlay_chart,
     create_synastry_chart
 )
+from core.birth_chart_reading import generate_birth_chart_reading
 
 
 # ============== Page Config ==============
@@ -55,6 +56,19 @@ LANG = {
         "chart_viz": "Chart Summary",
         "daily_prediction": "Daily Prediction",
         "weekly_prediction": "Weekly Forecast",
+        "birth_chart_reading": "Birth Chart Reading",
+        "your_destiny": "Your Destiny",
+        "sun_sign_reading": "Sun Sign Reading",
+        "moon_sign_reading": "Moon Sign Reading",
+        "rising_sign_reading": "Rising Sign Reading",
+        "planetary_emphasis": "Planetary Emphasis",
+        "life_themes": "Life Themes",
+        "key_aspects": "Key Aspects",
+        "life_theme": "Your Life Theme",
+        "strengths": "Strengths",
+        "challenges": "Challenges",
+        "core_identity": "Core Identity",
+        "element_dominant": "Element Dominant",
         "tab_transit": "🚀 Transits",
         "tab_synastry": "💕 Synastry",
         "chart_wheel": "Chart Wheel",
@@ -98,6 +112,19 @@ LANG = {
         "chart_viz": "สรุปดวงชะตา",
         "daily_prediction": "คำทำนายประจำวัน",
         "weekly_prediction": "คำทำนายประจำสัปดาห์",
+        "birth_chart_reading": "การอ่านดวงชะตา",
+        "your_destiny": "โชคชะตาของคุณ",
+        "sun_sign_reading": "การอ่านราศีเกิด",
+        "moon_sign_reading": "การอ่านดวงจันทร์",
+        "rising_sign_reading": "การอ่านราศีขึ้น",
+        "planetary_emphasis": "ดาวเคราห์ที่โดดเด่น",
+        "life_themes": "ธีมชีวิต",
+        "key_aspects": "มุมสำคัญ",
+        "life_theme": "ธีมชีวิตของคุณ",
+        "strengths": "จุดแข็ง",
+        "challenges": "ความท้าทาย",
+        "core_identity": "ตัวตนหลัก",
+        "element_dominant": "ธาตุที่โดดเด่น",
         "tab_transit": "🚀 ดาวเคราะห์ปัจจุบัน",
         "tab_synastry": "💕 ดวงคู่",
         "chart_wheel": "แผนภูมิดวงชะตา",
@@ -141,6 +168,19 @@ LANG = {
         "chart_viz": "星盘摘要",
         "daily_prediction": "每日预测",
         "weekly_prediction": "每周预测",
+        "birth_chart_reading": "星盘解读",
+        "your_destiny": "你的命运",
+        "sun_sign_reading": "太阳星座解读",
+        "moon_sign_reading": "月亮星座解读",
+        "rising_sign_reading": "上升星座解读",
+        "planetary_emphasis": "行星重点",
+        "life_themes": "人生主题",
+        "key_aspects": "关键相位",
+        "life_theme": "你的人生主题",
+        "strengths": "优势",
+        "challenges": "挑战",
+        "core_identity": "核心身份",
+        "element_dominant": "主导元素",
         "tab_transit": "🚀 推运",
         "tab_synastry": "💕 合盘",
         "chart_wheel": "星盘图",
@@ -462,11 +502,53 @@ def render_prediction_section(result: Dict, birth_data: Dict, lang: dict, lang_c
     """Render prediction tab"""
     planets = result["planets"]
     asc = result["ascendant"]
+    houses = result.get("houses", {})
+    aspects = result.get("aspects", [])
     year = birth_data["year"]
     month = birth_data["month"]
     day = birth_data["day"]
     
-    # Western prediction
+    # ===== BIRTH CHART READING (Destiny) =====
+    st.subheader("🔮 " + lang.get("birth_chart_reading", "Birth Chart Reading"))
+    
+    with st.spinner("Generating your destiny reading..."):
+        reading = generate_birth_chart_reading(planets, houses, asc, aspects, lang_code)
+        
+        for section in reading["sections"]:
+            if section.get("title"):
+                st.markdown(f"### {section['title']}")
+            
+            # Display planet meanings
+            if "planets" in section:
+                for p in section["planets"]:
+                    st.markdown(f"**{p['name']} in {p['sign']}**")
+                    meaning = p.get("meaning", {})
+                    core = meaning.get("core", "")
+                    if core:
+                        st.write(core)
+                    strengths = meaning.get("strengths", "")
+                    if strengths:
+                        st.caption(f"✨ {lang.get('strengths', 'Strengths')}: {strengths}")
+                    challenges = meaning.get("challenges", "")
+                    if challenges:
+                        st.caption(f"⚠️ {lang.get('challenges', 'Challenges')}: {challenges}")
+                    st.markdown("")
+            
+            # Display life theme
+            if section.get("theme"):
+                st.info(f"✨ **{lang.get('life_theme', 'Your Life Theme')}**: {section['theme']}")
+            
+            # Display aspects
+            if "aspects" in section:
+                for asp in section["aspects"][:5]:  # Limit to 5
+                    st.markdown(f"**{asp['p1']}** {asp['type']} **{asp['p2']}**")
+                    if asp.get("meaning"):
+                        st.write(asp["meaning"])
+                    st.markdown("")
+    
+    st.markdown("---")
+    
+    # ===== WESTERN PREDICTION =====
     render_western_prediction(planets, asc, lang, lang_code)
     
     st.markdown("---")
