@@ -416,13 +416,13 @@ def render_thai_prediction(year: int, month: int, day: int, planets: Dict, lang:
 """)
 
 
-def render_prediction_section(result: Dict, lang: dict, lang_code: str):
+def render_prediction_section(result: Dict, birth_data: Dict, lang: dict, lang_code: str):
     """Render prediction tab"""
     planets = result["planets"]
     asc = result["ascendant"]
-    year = result["subject"]["year"]
-    month = result["subject"]["month"]
-    day = result["subject"]["day"]
+    year = birth_data["year"]
+    month = birth_data["month"]
+    day = birth_data["day"]
     
     # Western prediction
     render_western_prediction(planets, asc, lang, lang_code)
@@ -505,9 +505,10 @@ def main():
     
     # === TAB 3: PREDICTION ===
     with tab3:
-        if "chart_result" in st.session_state:
+        if "chart_result" in st.session_state and "birth_data" in st.session_state:
             result = st.session_state["chart_result"]
-            render_prediction_section(result, lang, lang_code)
+            birth_data = st.session_state["birth_data"]
+            render_prediction_section(result, birth_data, lang, lang_code)
         else:
             st.info(lang["enter_birth"])
 
