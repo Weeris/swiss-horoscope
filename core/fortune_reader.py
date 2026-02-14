@@ -604,3 +604,129 @@ def generate_detailed_daily_fortune(
     fortune["recommendations"] = recommendations
     
     return fortune
+
+
+def generate_monthly_outlook(
+    natal_planets: Dict,
+    natal_ascendant: Dict,
+    year: int,
+    month: int,
+    timezone: str = "Asia/Bangkok",
+    lang: str = "en"
+) -> Dict:
+    """Generate monthly outlook based on planetary movements"""
+    
+    tz = pytz.timezone(timezone)
+    first_day = tz.localize(datetime(year, month, 1))
+    
+    # Get mid-month transits
+    mid_month = 15
+    mid_transits = get_current_transits_for_date(year, month, mid_month, 12, 0, timezone)
+    
+    # Get end of month
+    if month == 12:
+        next_month = datetime(year + 1, 1, 1)
+    else:
+        next_month = datetime(year, month + 1, 1)
+    last_day = (next_month - timedelta(days=1)).day
+    
+    outlook = {
+        "month": first_day.strftime("%B %Y"),
+        "title": "Monthly Outlook" if lang == "en" else "ดวงประจำเดือน",
+        "themes": [],
+        "highlights": [],
+        "advice": ""
+    }
+    
+    # Key transits for the month
+    for planet in ["Sun", "Mercury", "Venus", "Mars", "Jupiter", "Saturn"]:
+        if planet in mid_transits:
+            p = mid_transits[planet]
+            sign = p["sign"]
+            element = SIGN_ELEMENTS.get(sign, "Fire")
+            
+            outlook["themes"].append({
+                "planet": planet,
+                "sign": sign,
+                "element": element,
+                "meaning": TRANSIT_MEANINGS.get(planet, {}).get(lang, "")
+            })
+    
+    # Major aspects
+    aspects = calculate_transit_aspects(natal_planets, mid_transits)
+    for asp in aspects[:3]:
+        outlook["highlights"].append({
+            "aspect": f"{asp['transiting']} {asp['type']} {asp['natal']}",
+            "description": f"{asp['transiting']} in {asp['transit_sign']} makes {asp['type']} to natal {asp['natal']}"
+        })
+    
+    # General advice
+    jupiter_sign = mid_transits.get("Jupiter", {}).get("sign", "Sagittarius")
+    saturn_sign = mid_transits.get("Saturn", {}).get("sign", "Capricorn")
+    
+    if lang == "en":
+        outlook["advice"] = f"This month, focus on growth ({jupiter_sign}) while maintaining structure ({saturn_sign})."
+    else:
+        outlook["advice"] = f"เดือนนี้ ให้มุ่งเน้นการเติบโต ({jupiter_sign}) ขณะที่รักษาโครงสร้าง ({saturn_sign})"
+    
+    return outlook
+
+
+def generate_yearly_outlook(
+    natal_planets: Dict,
+    natal_ascendant: Dict,
+    year: int,
+    timezone: str = "Asia/Bangkok",
+    lang: str = "en"
+) -> Dict:
+    """Generate yearly outlook based on major transits (Jupiter & Saturn)"""
+    
+    outlook = {
+        "year": str(year),
+        "title": "Yearly Outlook" if lang == "en" else "ดวงประจำปี",
+        "overview": "",
+        "quarters": [],
+        "major_transits": []
+    }
+    
+    # Get transits for key dates in the year
+    quarters = [
+        (year, 2, "Q1"),   # February
+        (year, 5, "Q2"),   # May
+        (year, 8, "Q3"),   # August  
+        (year, 11, "Q4")   # November
+    ]
+    
+    for q_year, q_month, q_name in quarters:
+        transits = get_current_transits_for_date(q_year, q_month, 15, 12, 0, timezone)
+        
+        jupiter = transits.get("Jupiter", {})
+        saturn = transits.get("Saturn", {})
+        
+        outlook["quarters"].append({
+            "quarter": q_name,
+            "month": f"{q_month}/{q_year % 100}",
+            "jupiter": jupiter.get("sign", "Unknown"),
+            "saturn": saturn.get("sign", "Unknown"),
+            "theme": f"Jupiter in {jupiter.get('sign')}, Saturn in {saturn.get('sign')}" if lang == "en" else f"ดาวพฤหัสใน{jupiter.get('sign')} ดาวเสาร์ใน{saturn.get('sign')}"
+        })
+    
+    # Get Jupiter and Saturn positions for the year
+    year_mid = get_current_transits_for_date(year, 6, 15, 12, 0, timezone)
+    jupiter_sign = year_mid.get("Jupiter", {}).get("sign", "Sagittarius")
+    saturn_sign = year_mid.get("Saturn", {}).get("sign", "Capricorn")
+    
+    outlook["major_transits"] = [
+        {"planet": "Jupiter", "sign": jupiter_sign, "meaning": "Growth and expansion opportunities"},
+        {"planet": "Saturn", "sign": saturn_sign, "meaning": "Lessons and structure building"}
+    ]
+    
+    # Overview
+    if lang == "en":
+        outlook["overview"] = f"""This year, Jupiter transits **{jupiter_sign}** bringing growth and opportunities, 
+while Saturn in **{saturn_sign}** emphasizes structure and responsibility."""
+    else:
+        outlook["overview"] = f"""ปีนี้ ดาวพฤหัสบดีเดินผ่าน **{jupiter_sign}** นำมาซึ่งการเติบโตและโอกาส 
+ในขณะที่ดาวเสาร์ใน **{saturn_sign}** เน้นโครงสร้างและความรับผิดชอบ"""
+    
+    return outlook
