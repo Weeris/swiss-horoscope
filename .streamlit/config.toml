@@ -2,7 +2,12 @@
 name = "Swiss Horoscope"
 
 [theme]
-primaryColor = "#7c3aed"
+primaryColor = "#9333ea"
 backgroundColor = "#0f172a"
-secondaryBackgroundColor = "#1e293b"
-textColor = "#f1f5f9"
+secondaryBackgroundColor = "#1e1b4b"
+tertiaryBackgroundColor = "#312e81"
+textColor = "#e2e8f0"
+font = "Sans Serif"
+
+[runner]
+magicEnabled = true

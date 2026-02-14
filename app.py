@@ -13,6 +13,7 @@ from core.chart_wheel import (
     get_current_transits, create_transit_overlay_chart,
     create_synastry_chart
 )
+from core.interactive_chart import create_interactive_chart_wheel
 from core.birth_chart_reading import generate_birth_chart_reading
 from core.fortune_reader import generate_daily_fortune, generate_monthly_outlook, generate_yearly_outlook
 
@@ -23,6 +24,155 @@ st.set_page_config(
     page_icon="🔮",
     layout="wide"
 )
+
+
+# ============== Custom CSS ==============
+st.markdown("""
+<style>
+    /* Main theme - deep mystical purple */
+    .stApp {
+        background: linear-gradient(135deg, #0f0a1f 0%, #1a103c 50%, #0d1b2a 100%);
+    }
+    
+    /* Card styling */
+    .card {
+        background: rgba(30, 27, 75, 0.6);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid rgba(147, 51, 234, 0.3);
+        backdrop-filter: blur(10px);
+    }
+    
+    /* Element color badges */
+    .element-fire { 
+        background: linear-gradient(135deg, #FF6B6B, #FF8E53); 
+        color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold;
+    }
+    .element-earth { 
+        background: linear-gradient(135deg, #4ECDC4, #44A08D); 
+        color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold;
+    }
+    .element-air { 
+        background: linear-gradient(135deg, #FFE66D, #F7DC6F); 
+        color: #1a103c; padding: 4px 12px; border-radius: 20px; font-weight: bold;
+    }
+    .element-water { 
+        background: linear-gradient(135deg, #74B9FF, #0984E3); 
+        color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold;
+    }
+    
+    /* Planet tooltips */
+    .planet-info {
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid #9333ea;
+        border-radius: 8px;
+        padding: 12px;
+        margin: 8px 0;
+    }
+    
+    /* Animated stars background */
+    @keyframes twinkle {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 1; }
+    }
+    
+    /* Loading animation */
+    .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+    }
+    
+    .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(147, 51, 234, 0.2);
+        border-top: 4px solid #9333ea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+        color: #a78bfa;
+        margin-top: 16px;
+        font-size: 16px;
+    }
+    
+    /* Glowing buttons */
+    .stButton > button {
+        background: linear-gradient(135deg, #7c3aed, #9333ea);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-weight: bold;
+        padding: 12px 24px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(147, 51, 234, 0.6);
+    }
+    
+    /* Tab styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background: rgba(30, 27, 75, 0.5);
+        border-radius: 10px 10px 0 0;
+        padding: 10px 20px;
+        border: 1px solid rgba(147, 51, 234, 0.2);
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #7c3aed, #9333ea);
+        border: none;
+    }
+    
+    /* Metric cards */
+    div[data-testid="stMetric"] {
+        background: rgba(30, 27, 75, 0.5);
+        border-radius: 12px;
+        padding: 16px;
+        border: 1px solid rgba(147, 51, 234, 0.2);
+    }
+    
+    /* Hide default header */
+    header {visibility: hidden;}
+    
+    /* Custom title styling */
+    .main-title {
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #c084fc, #9333ea, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .subtitle {
+        text-align: center;
+        color: #a78bfa;
+        font-size: 1.1rem;
+    }
+    
+    /* Chart container hover effect */
+    .chart-container:hover {
+        transform: scale(1.02);
+        transition: transform 0.3s ease;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 
 # ============== Language Support ==============
@@ -705,20 +855,87 @@ def main():
             with col_opts2:
                 show_aspects = st.checkbox(lang.get("show_aspects", "Show Aspects"), value=True)
             
-            # Generate and display chart
-            with st.spinner("Generating chart..."):
-                fig = create_chart_wheel(
+            # Generate and display chart with loading animation
+            with st.container():
+                loading_placeholder = st.empty()
+                with loading_placeholder:
+                    st.markdown("""
+                    <div class="loading-container">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">✨ Reading the stars...</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                # Create interactive Plotly chart
+                fig = create_interactive_chart_wheel(
                     planets=result["planets"],
                     houses=result["houses"],
                     ascendant=result["ascendant"],
                     midheaven=result["midheaven"],
                     aspects=result.get("aspects", []) if show_aspects else None,
                     show_aspects=show_aspects,
-                    show_houses=show_houses
+                    show_houses=show_houses,
+                    width=600,
+                    height=600
                 )
-                chart_bytes = chart_to_image(fig)
-                st.image(chart_bytes, use_container_width=True)
-                plt.close(fig)
+                
+                # Clear loading and show chart
+                loading_placeholder.empty()
+                
+                # Display interactive chart
+                st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+                st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': True})
+                st.markdown('</div>', unsafe_allow_html=True)
+            
+            # Interactive Planet Details
+            st.markdown("### ☀️ Planet Details")
+            st.markdown("*Hover over planets in the chart above to learn more*")
+            
+            # Create expandable planet cards
+            for planet, data in result["planets"].items():
+                sign = data.get("sign", "Unknown")
+                degree = data.get("degree", 0)
+                house = data.get("house", "N/A")
+                is_retrograde = data.get("retrograde", False)
+                
+                # Get element for color
+                element = "Unknown"
+                if sign in ["Aries", "Leo", "Sagittarius"]:
+                    element = "Fire"
+                elif sign in ["Taurus", "Virgo", "Capricorn"]:
+                    element = "Earth"
+                elif sign in ["Gemini", "Libra", "Aquarius"]:
+                    element = "Air"
+                elif sign in ["Cancer", "Scorpio", "Pisces"]:
+                    element = "Water"
+                
+                with st.expander(f"🌟 {planet} in {sign} {int(degree)}° {'(Rx)' if is_retrograde else ''}"):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.markdown(f"**Sign:** {sign}")
+                        st.markdown(f"**Degree:** {int(degree)}°{int((degree % 1) * 60)}'")
+                        st.markdown(f"**House:** {house}")
+                    with col2:
+                        st.markdown(f"**Element:** <span class='element-{element.lower()}'>{element}</span>", unsafe_allow_html=True)
+                        st.markdown(f"**Retrograde:** {'Yes 🔄' if is_retrograde else 'No'}")
+                    
+                    # Planet description
+                    planet_descriptions = {
+                        'Sun': 'The core of your identity and life force.',
+                        'Moon': 'Your emotional nature and inner needs.',
+                        'Mercury': 'Your communication style and thinking.',
+                        'Venus': 'Love, beauty, and what you value.',
+                        'Mars': 'Energy, drive, and action.',
+                        'Jupiter': 'Growth, luck, and expansion.',
+                        'Saturn': 'Discipline, structure, and lessons.',
+                        'Uranus': 'Innovation, change, and uniqueness.',
+                        'Neptune': 'Dreams, intuition, and spirituality.',
+                        'Pluto': 'Transformation and power.'
+                    }
+                    if planet in planet_descriptions:
+                        st.markdown(f"_{planet_descriptions[planet]}_")
+            
+            st.markdown("---")
             
             st.markdown("---")
             
