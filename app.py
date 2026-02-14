@@ -23,17 +23,15 @@ LANG = {
         "title": "🔮 Swiss Horoscope",
         "subtitle": "Precision Astrology with Swiss Ephemeris",
         "birth_info": "📅 Birth Information",
-        "name": "Name",
         "birth_date": "Birth Date",
         "birth_time": "Birth Time",
         "hour": "Hour",
         "minute": "Minute",
         "location": "📍 Birth Location",
-        "latitude": "Latitude",
-        "longitude": "Longitude",
-        "timezone": "Timezone",
+        "select_city": "Select City",
         "calculate": "✨ Calculate Birth Chart",
         "your_chart": "Your Birth Chart",
+        "sun_sign": "Sun Sign (Birth Sign)",
         "planets": "🪐 Planetary Positions",
         "ascendant": "Rising Sign (Ascendant)",
         "midheaven": "Midheaven (MC)",
@@ -44,22 +42,23 @@ LANG = {
         "house": "House",
         "retrograde": "Retrograde",
         "enter_birth": "Enter your birth details to see your chart",
+        "prediction": "🔮 Daily Prediction",
+        "elements": "🔥 Elements Distribution",
+        "chart_viz": "📊 Birth Chart Visualization",
     },
     "th": {
         "title": "🔮 ดวงชะตาสวิส",
         "subtitle": "โหราศาสตร์แม่นยำสูงด้วย Swiss Ephemeris",
         "birth_info": "📅 ข้อมูลวันเกิด",
-        "name": "ชื่อ",
         "birth_date": "วันเกิด",
         "birth_time": "เวลาเกิด",
         "hour": "ชั่วโมง",
         "minute": "นาที",
         "location": "📍 สถานที่เกิด",
-        "latitude": "ละติจูด",
-        "longitude": "ลองจิจูด",
-        "timezone": "เขตเวลา",
+        "select_city": "เลือกเมือง",
         "calculate": "✨ คำนวณดวงชะตา",
         "your_chart": "ดวงชะตาของคุณ",
+        "sun_sign": "ราศีเกิด (Sun Sign)",
         "planets": "🪐 ตำแหน่งดาวเคราะห์",
         "ascendant": "ราศีขึ้น (Ascendant)",
         "midheaven": "มิดฮีเวน (MC)",
@@ -70,22 +69,23 @@ LANG = {
         "house": "เรือน",
         "retrograde": "ถอยหลัง",
         "enter_birth": "กรอกข้อมูลวันเกิดของคุณเพื่อดูดวงชะตา",
+        "prediction": "🔮 คำทำนายประจำวัน",
+        "elements": "🔥 ธาตุ",
+        "chart_viz": "📊 ภาพดวงชะตา",
     },
     "zh": {
         "title": "🔮 瑞士星盘",
         "subtitle": "使用瑞士星历表的高精度占星术",
         "birth_info": "📅 出生信息",
-        "name": "姓名",
         "birth_date": "出生日期",
         "birth_time": "出生时间",
         "hour": "小时",
         "minute": "分钟",
         "location": "📍 出生地点",
-        "latitude": "纬度",
-        "longitude": "经度",
-        "timezone": "时区",
+        "select_city": "选择城市",
         "calculate": "✨ 计算星盘",
         "your_chart": "你的星盘",
+        "sun_sign": "太阳星座",
         "planets": "🪐 行星位置",
         "ascendant": "上升星座",
         "midheaven": "中天 (MC)",
@@ -96,55 +96,48 @@ LANG = {
         "house": "宫",
         "retrograde": "逆行",
         "enter_birth": "输入您的出生信息以查看星盘",
+        "prediction": "🔮 每日预测",
+        "elements": "🔥 元素分布",
+        "chart_viz": "📊 星盘可视化",
     }
 }
 
-# Common locations (city: lat, lng)
-COMMON_LOCATIONS = {
-    "en": {
-        "Bangkok, Thailand": (13.7563, 100.5018),
-        "Hong Kong": (22.3193, 114.1694),
-        "London, UK": (51.5074, -0.1278),
-        "New York, USA": (40.7128, -74.0060),
-        "Tokyo, Japan": (35.6762, 139.6503),
-        "Los Angeles, USA": (34.0522, -118.2437),
-        "Singapore": (1.3521, 103.8198),
-    },
-    "th": {
-        "กรุงเทพฯ ประเทศไทย": (13.7563, 100.5018),
-        "ฮ่องกง": (22.3193, 114.1694),
-        "ลอนดอน อังกฤษ": (51.5074, -0.1278),
-        "นิวยอร์ก สหรัฐฯ": (40.7128, -74.0060),
-        "โตเกียว ญี่ปุ่น": (35.6762, 139.6503),
-        "ลอสแองเจลิส สหรัฐฯ": (34.0522, -118.2437),
-        "สิงคโปร์": (1.3521, 103.8198),
-    },
-    "zh": {
-        "泰国曼谷": (13.7563, 100.5018),
-        "香港": (22.3193, 114.1694),
-        "伦敦": (51.5074, -0.1278),
-        "纽约": (40.7128, -74.0060),
-        "东京": (35.6762, 139.6503),
-        "洛杉矶": (34.0522, -118.2437),
-        "新加坡": (1.3521, 103.8198),
-    }
+# Cities with coordinates and timezone
+CITIES = {
+    "Bangkok, Thailand": {"lat": 13.7563, "lng": 100.5018, "tz": "Asia/Bangkok"},
+    "Hong Kong": {"lat": 22.3193, "lng": 114.1694, "tz": "Asia/Hong_Kong"},
+    "London, UK": {"lat": 51.5074, "lng": -0.1278, "tz": "Europe/London"},
+    "New York, USA": {"lat": 40.7128, "lng": -74.0060, "tz": "America/New_York"},
+    "Tokyo, Japan": {"lat": 35.6762, "lng": 139.6503, "tz": "Asia/Tokyo"},
+    "Los Angeles, USA": {"lat": 34.0522, "lng": -118.2437, "tz": "America/Los_Angeles"},
+    "Singapore": {"lat": 1.3521, "lng": 103.8198, "tz": "Asia/Singapore"},
+    "Shanghai, China": {"lat": 31.2304, "lng": 121.4737, "tz": "Asia/Shanghai"},
+    "Sydney, Australia": {"lat": -33.8688, "lng": 151.2093, "tz": "Australia/Sydney"},
+    "Dubai, UAE": {"lat": 25.2048, "lng": 55.2708, "tz": "Asia/Dubai"},
 }
 
-TIMEZONES = [
-    "Asia/Bangkok",
-    "Asia/Hong_Kong",
-    "Asia/Singapore",
-    "Asia/Tokyo",
-    "Asia/Shanghai",
-    "Asia/Seoul",
-    "Europe/London",
-    "Europe/Paris",
-    "Europe/Berlin",
-    "America/New_York",
-    "America/Los_Angeles",
-    "America/Chicago",
-    "UTC",
-]
+# Zodiac signs with traits
+SIGN_TRAITS = {
+    "Aries": {"element": "Fire", "quality": "Cardinal", "traits": "Bold, energetic, pioneering, competitive"},
+    "Taurus": {"element": "Earth", "quality": "Fixed", "traits": "Patient, reliable, practical, sensual"},
+    "Gemini": {"element": "Air", "quality": "Mutable", "traits": "Curious, adaptable, communicative, witty"},
+    "Cancer": {"element": "Water", "quality": "Cardinal", "traits": "Intuitive, emotional, protective, nurturing"},
+    "Leo": {"element": "Fire", "quality": "Fixed", "traits": "Confident, creative, generous, proud"},
+    "Virgo": {"element": "Earth", "quality": "Mutable", "traits": "Analytical, practical, helpful, perfectionist"},
+    "Libra": {"element": "Air", "quality": "Cardinal", "traits": "Diplomatic, fair, social, artistic"},
+    "Scorpio": {"element": "Water", "quality": "Fixed", "traits": "Passionate, mysterious, determined, intense"},
+    "Sagittarius": {"element": "Fire", "quality": "Mutable", "traits": "Optimistic, adventurous, philosophical, honest"},
+    "Capricorn": {"element": "Earth", "quality": "Cardinal", "traits": "Ambitious, disciplined, responsible, patient"},
+    "Aquarius": {"element": "Air", "quality": "Fixed", "traits": "Independent, original, humanitarian, quirky"},
+    "Pisces": {"element": "Water", "quality": "Mutable", "traits": "Compassionate, artistic, intuitive, escapist"},
+}
+
+ELEMENT_TRAITS = {
+    "Fire": {"color": "🔴", "traits": "Energetic, passionate, impulsive, enthusiastic"},
+    "Earth": {"color": "🟤", "traits": "Practical, stable, grounded, materialistic"},
+    "Air": {"color": "💨", "traits": "Intellectual, social, communicative, flexible"},
+    "Water": {"color": "💧", "traits": "Emotional, intuitive, compassionate, sensitive"},
+}
 
 
 def get_lang(lang_code: str = "en") -> dict:
@@ -166,7 +159,6 @@ def render_birth_input(lang: dict, lang_code: str = "en", key_prefix: str = "") 
     col1, col2 = st.columns(2)
     
     with col1:
-        name = st.text_input(lang["name"], key=f"{key_prefix}_name")
         birth_date = st.date_input(
             lang["birth_date"],
             value=datetime(1990, 1, 1),
@@ -179,51 +171,29 @@ def render_birth_input(lang: dict, lang_code: str = "en", key_prefix: str = "") 
     
     st.subheader(lang["location"])
     
-    col3, col4, col5 = st.columns(3)
+    col1, col2 = st.columns([2, 1])
     
-    with col3:
-        location_options = list(COMMON_LOCATIONS.get(lang_code, COMMON_LOCATIONS["en"]).keys())
-        selected_location = st.selectbox(
-            lang["location"],
-            options=location_options,
-            key=f"{key_prefix}_location"
+    with col1:
+        selected_city = st.selectbox(
+            lang["select_city"],
+            options=list(CITIES.keys()),
+            key=f"{key_prefix}_city"
         )
     
-    with col4:
-        latitude = st.number_input(
-            lang["latitude"],
-            -90.0, 90.0,
-            COMMON_LOCATIONS.get(lang_code, COMMON_LOCATIONS["en"])[selected_location][0],
-            step=0.1,
-            key=f"{key_prefix}_lat"
-        )
+    city_data = CITIES[selected_city]
     
-    with col5:
-        longitude = st.number_input(
-            lang["longitude"],
-            -180.0, 180.0,
-            COMMON_LOCATIONS.get(lang_code, COMMON_LOCATIONS["en"])[selected_location][1],
-            step=0.1,
-            key=f"{key_prefix}_lng"
-        )
-    
-    timezone = st.selectbox(
-        lang["timezone"],
-        options=TIMEZONES,
-        index=0,
-        key=f"{key_prefix}_tz"
-    )
+    with col2:
+        st.text_input("Timezone", value=city_data["tz"], disabled=True)
     
     return {
-        "name": name or "User",
         "year": birth_date.year,
         "month": birth_date.month,
         "day": birth_date.day,
         "hour": hour,
         "minute": minute,
-        "latitude": latitude,
-        "longitude": longitude,
-        "timezone": timezone
+        "latitude": city_data["lat"],
+        "longitude": city_data["lng"],
+        "timezone": city_data["tz"]
     }
 
 
@@ -242,11 +212,10 @@ def render_planets(planets: Dict, lang: dict):
             p = planets[planet]
             with cols[i % 3]:
                 retro = " (R)" if p.get("retrograde") else ""
-                house = f", {p.get('house')}th House" if p.get("house") else ""
+                house = f", H{p.get('house')}" if p.get("house") else ""
                 st.metric(
-                    f"♈ {planet}",
-                    f"{p['sign']} {p['degree']:.2f}°{retro}",
-                    help=f"House {house}"
+                    f"{planet}",
+                    f"{p['sign']} {p['degree']:.1f}°{retro}"
                 )
 
 
@@ -257,13 +226,13 @@ def render_ascendant_midheaven(asc: Dict, mc: Dict, lang: dict):
     with col1:
         st.metric(
             f"↑ {lang['ascendant']}",
-            f"{asc['sign']} {asc['degree']:.2f}°"
+            f"{asc['sign']} {asc['degree']:.1f}°"
         )
     
     with col2:
         st.metric(
             f"☰ {lang['midheaven']}",
-            f"{mc['sign']} {mc['degree']:.2f}°"
+            f"{mc['sign']} {mc['degree']:.1f}°"
         )
 
 
@@ -276,7 +245,7 @@ def render_houses(houses: Dict, lang: dict):
         with cols[i % 4]:
             st.metric(
                 f"House {house_num}",
-                f"{house_data['sign']} {house_data['degree']:.2f}°"
+                f"{house_data['sign']} {house_data['degree']:.1f}°"
             )
 
 
@@ -285,20 +254,113 @@ def render_aspects(aspects: List[Dict], lang: dict):
     st.subheader(lang["aspects"])
     
     aspect_emojis = {
-        "CONJUNCTION": "Conj",
-        "OPPOSITION": "Opp",
-        "SQUARE": "Sq",
-        "TRINE": "Trine",
-        "SEXTILE": "Sxt"
+        "CONJUNCTION": "☌",
+        "OPPOSITION": "☍",
+        "SQUARE": "□",
+        "TRINE": "△",
+        "SEXTILE": "⚹"
     }
     
     if not aspects:
         st.info("No major aspects detected")
         return
     
+    # Group by aspect type
     for aspect in aspects:
-        emoji = aspect_emojis.get(aspect["type"], "-")
-        st.markdown(f"**{emoji} {aspect['p1']}** {aspect['type']} **{aspect['p2']}** (orb: {aspect['orb']:.2f})")
+        emoji = aspect_emojis.get(aspect["type"], "●")
+        orb_text = "★" if aspect["exact"] else ""
+        st.markdown(f"**{emoji} {aspect['p1']}** — **{aspect['p2']}** ({aspect['type']}{orb_text})")
+
+
+def render_elements(planets: Dict, lang: dict):
+    """Render element distribution"""
+    st.subheader(lang["elements"])
+    
+    elements = {"Fire": 0, "Earth": 0, "Air": 0, "Water": 0}
+    
+    planet_order = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", 
+                    "Saturn", "Uranus", "Neptune", "Pluto"]
+    
+    for planet in planet_order:
+        if planet in planets:
+            sign = planets[planet]["sign"]
+            if sign in SIGN_TRAITS:
+                elem = SIGN_TRAITS[sign]["element"]
+                elements[elem] += 1
+    
+    cols = st.columns(4)
+    for i, (elem, count) in enumerate(elements.items()):
+        emoji = ELEMENT_TRAITS[elem]["color"]
+        with cols[i]:
+            st.metric(f"{emoji} {elem}", f"{count}/10")
+
+
+def render_prediction(planets: Dict, asc: Dict, lang: dict) -> str:
+    """Generate simple prediction based on chart"""
+    st.subheader(lang["prediction"])
+    
+    # Get sun sign
+    sun_sign = planets.get("Sun", {}).get("sign", "Aries")
+    asc_sign = asc.get("sign", "Aries")
+    
+    # Get traits
+    sun_traits = SIGN_TRAITS.get(sun_sign, {})
+    sun_element = sun_traits.get("element", "Fire")
+    sun_quality = sun_traits.get("quality", "Cardinal")
+    
+    # Simple prediction template
+    prediction = f"""
+### ☀️ Sun in {sun_sign}
+*{sun_traits.get('traits', '')}*
+
+**Element:** {sun_element} | **Quality:** {sun_quality}
+
+### ↑ Rising Sign: {asc_sign}
+Your rising sign represents how others see you initially and your approach to life.
+
+---
+*This is a basic prediction based on your birth chart. For detailed readings, consult a professional astrologer.*
+"""
+    
+    st.markdown(prediction)
+    return sun_sign
+
+
+def render_chart_visualization(planets: Dict, houses: Dict, asc: Dict, lang: dict):
+    """Render ASCII birth chart visualization"""
+    st.subheader(lang["chart_viz"])
+    
+    # Create a simple wheel representation
+    signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+             "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
+    
+    # Build planet positions
+    planet_positions = {}
+    for planet, data in planets.items():
+        sign = data.get("sign", "Aries")
+        degree = data.get("degree", 0)
+        sign_idx = signs.index(sign) if sign in signs else 0
+        position = sign_idx * 30 + degree
+        planet_positions[planet] = {"sign": sign, "degree": degree, "position": position}
+    
+    # Ascendant
+    if asc:
+        asc_sign = asc.get("sign", "Aries")
+        asc_degree = asc.get("degree", 0)
+        asc_idx = signs.index(asc_sign) if asc_sign in signs else 0
+        planet_positions["ASC"] = {"sign": asc_sign, "degree": asc_degree, "position": asc_idx * 30 + asc_degree}
+    
+    # Display as a table
+    data = []
+    for planet, info in planet_positions.items():
+        data.append({
+            "Planet": planet,
+            "Sign": info["sign"],
+            "Degree": f"{info['degree']:.1f}°",
+            "Position": "●" * 10
+        })
+    
+    st.table(data)
 
 
 # ============== Main App ==============
@@ -330,13 +392,26 @@ def main():
                     timezone=birth_data["timezone"]
                 )
             
-            st.success(f"✨ {lang['your_chart']} - {birth_data['name']}")
+            st.success(f"✨ {lang['your_chart']}")
             
-            # Display results
+            # Display birth info
             st.markdown(f"**{result['subject']['date_time']}** | {result['subject']['timezone']}")
+            
+            # Sun sign prominently
+            sun = result['planets']['Sun']
+            st.info(f"### 🌟 {lang['sun_sign']}: {sun['sign']} {sun['degree']:.1f}°")
             
             # Ascendant & Midheaven
             render_ascendant_midheaven(result["ascendant"], result["midheaven"], lang)
+            
+            # Elements
+            render_elements(result["planets"], lang)
+            
+            # Prediction
+            sun_sign = render_prediction(result["planets"], result["ascendant"], lang)
+            
+            # Chart visualization
+            render_chart_visualization(result["planets"], result["houses"], result["ascendant"], lang)
             
             # Planets
             render_planets(result["planets"], lang)
@@ -349,7 +424,8 @@ def main():
             
         except Exception as e:
             st.error(f"Error calculating chart: {str(e)}")
-            st.info("Make sure you have installed immanuel: pip install immanuel")
+            import traceback
+            st.code(traceback.format_exc())
     
     else:
         st.info(lang["enter_birth"])
