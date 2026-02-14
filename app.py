@@ -6,7 +6,13 @@ Precision-powered horoscope using Swiss Ephemeris (pyswisseph)
 import streamlit as st
 from datetime import datetime
 from typing import Optional, Dict, List
+import matplotlib.pyplot as plt
 from core.swiss_eph import SwissEphemerisCalculator
+from core.chart_wheel import (
+    create_chart_wheel, chart_to_image,
+    get_current_transits, create_transit_overlay_chart,
+    create_synastry_chart
+)
 
 
 # ============== Page Config ==============
@@ -49,6 +55,18 @@ LANG = {
         "chart_viz": "Chart Summary",
         "daily_prediction": "Daily Prediction",
         "weekly_prediction": "Weekly Forecast",
+        "tab_transit": "🚀 Transits",
+        "tab_synastry": "💕 Synastry",
+        "chart_wheel": "Chart Wheel",
+        "show_houses": "Show Houses",
+        "show_aspects": "Show Aspects",
+        "transit_overlay": "Transit Overlay",
+        "current_transits": "Current Transits",
+        "synastry": "Synastry Chart",
+        "person1": "Person 1",
+        "person2": "Person 2",
+        "enter_person2": "Enter second person's birth details",
+        "compare": "Compare Charts",
     },
     "th": {
         "title": "🔮 ดวงชะตาสวิส",
@@ -80,6 +98,18 @@ LANG = {
         "chart_viz": "สรุปดวงชะตา",
         "daily_prediction": "คำทำนายประจำวัน",
         "weekly_prediction": "คำทำนายประจำสัปดาห์",
+        "tab_transit": "🚀 ดาวเคราะห์ปัจจุบัน",
+        "tab_synastry": "💕 ดวงคู่",
+        "chart_wheel": "แผนภูมิดวงชะตา",
+        "show_houses": "แสดงเรือน",
+        "show_aspects": "แสดงมุมดาว",
+        "transit_overlay": "ซ้อนดวงปัจจุบัน",
+        "current_transits": "ดาวเคราะห์ปัจจุบัน",
+        "synastry": "ดวงคู่เปรียบเทียบ",
+        "person1": "คนที่ 1",
+        "person2": "คนที่ 2",
+        "enter_person2": "กรอกข้อมูลวันเกิดคนที่ 2",
+        "compare": "เปรียบเทียบดวง",
     },
     "zh": {
         "title": "🔮 瑞士星盘",
@@ -111,6 +141,18 @@ LANG = {
         "chart_viz": "星盘摘要",
         "daily_prediction": "每日预测",
         "weekly_prediction": "每周预测",
+        "tab_transit": "🚀 推运",
+        "tab_synastry": "💕 合盘",
+        "chart_wheel": "星盘图",
+        "show_houses": "显示宫位",
+        "show_aspects": "显示相位",
+        "transit_overlay": "推运叠加",
+        "current_transits": "当前星象",
+        "synastry": "合盘分析",
+        "person1": "第一人",
+        "person2": "第二人",
+        "enter_person2": "输入第二人的出生信息",
+        "compare": "对比星盘",
     }
 }
 
@@ -458,7 +500,10 @@ def main():
     render_header(lang)
     
     # Tabs
-    tab1, tab2, tab3 = st.tabs([lang["tab_input"], lang["tab_chart"], lang["tab_prediction"]])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        lang["tab_input"], lang["tab_chart"], lang["tab_prediction"],
+        lang.get("tab_transit", "🚀 Transits"), lang.get("tab_synastry", "💕 Synastry")
+    ])
     
     # === TAB 1: INPUT ===
     with tab1:
@@ -496,6 +541,34 @@ def main():
         if "chart_result" in st.session_state:
             result = st.session_state["chart_result"]
             
+            # Chart wheel visualization
+            st.subheader("🌀 " + lang.get("chart_wheel", "Chart Wheel"))
+            
+            # Options for the chart
+            col_opts1, col_opts2 = st.columns([1, 1])
+            with col_opts1:
+                show_houses = st.checkbox(lang.get("show_houses", "Show Houses"), value=True)
+            with col_opts2:
+                show_aspects = st.checkbox(lang.get("show_aspects", "Show Aspects"), value=True)
+            
+            # Generate and display chart
+            with st.spinner("Generating chart..."):
+                fig = create_chart_wheel(
+                    planets=result["planets"],
+                    houses=result["houses"],
+                    ascendant=result["ascendant"],
+                    midheaven=result["midheaven"],
+                    aspects=result.get("aspects", []) if show_aspects else None,
+                    show_aspects=show_aspects,
+                    show_houses=show_houses
+                )
+                chart_bytes = chart_to_image(fig)
+                st.image(chart_bytes, use_container_width=True)
+                plt.close(fig)
+            
+            st.markdown("---")
+            
+            # Text details below chart
             render_birth_chart(result, lang)
             render_planets(result["planets"], lang)
             render_houses(result["houses"], lang)
@@ -509,6 +582,122 @@ def main():
             result = st.session_state["chart_result"]
             birth_data = st.session_state["birth_data"]
             render_prediction_section(result, birth_data, lang, lang_code)
+        else:
+            st.info(lang["enter_birth"])
+    
+    # === TAB 4: TRANSITS ===
+    with tab4:
+        if "chart_result" in st.session_state:
+            result = st.session_state["chart_result"]
+            birth_data = st.session_state["birth_data"]
+            
+            st.subheader("🚀 " + lang.get("transit_overlay", "Transit Overlay"))
+            
+            # Options
+            col_opts1, col_opts2 = st.columns([1, 1])
+            with col_opts1:
+                show_transit_houses = st.checkbox(lang.get("show_houses", "Show Houses"), value=True, key="trans_houses")
+            with col_opts2:
+                show_transit_aspects = st.checkbox(lang.get("show_aspects", "Show Aspects"), value=True, key="trans_aspects")
+            
+            with st.spinner("Calculating current transits..."):
+                # Get current transits
+                transits = get_current_transits(timezone=birth_data["timezone"])
+                
+                # Create transit overlay chart
+                fig = create_transit_overlay_chart(
+                    natal_planets=result["planets"],
+                    natal_houses=result["houses"],
+                    natal_ascendant=result["ascendant"],
+                    natal_midheaven=result["midheaven"],
+                    natal_aspects=result.get("aspects", []),
+                    transit_planets=transits,
+                    show_aspects=True,
+                    show_houses=show_transit_houses,
+                    show_transit_aspects=show_transit_aspects
+                )
+                chart_bytes = chart_to_image(fig)
+                st.image(chart_bytes, use_container_width=True)
+                plt.close(fig)
+            
+            # Show current transit positions
+            st.markdown("---")
+            st.subheader(lang.get("current_transits", "Current Transits"))
+            
+            transit_cols = st.columns(5)
+            transit_planets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
+                              'Saturn', 'Uranus', 'Neptune', 'Pluto']
+            for i, planet in enumerate(transit_planets):
+                if planet in transits:
+                    with transit_cols[i % 5]:
+                        t = transits[planet]
+                        st.metric(planet, f"{t['sign']} {t['degree']:.1f}°")
+        else:
+            st.info(lang["enter_birth"])
+    
+    # === TAB 5: SYNASTRY ===
+    with tab5:
+        if "chart_result" in st.session_state:
+            result = st.session_state["chart_result"]
+            birth_data = st.session_state["birth_data"]
+            
+            st.subheader("💕 " + lang.get("synastry", "Synastry Chart"))
+            
+            # Person 2 input
+            st.markdown("### " + lang.get("enter_person2", "Enter second person's birth details"))
+            
+            birth_data_p2 = render_birth_input(lang, key_prefix="p2_")
+            
+            col_calc = st.columns([1])
+            with col_calc[0]:
+                if st.button(lang.get("compare", "Compare Charts"), type="primary", use_container_width=True, key="synastry_btn"):
+                    try:
+                        with st.spinner("Calculating synastry..."):
+                            # Calculate Person 2 chart
+                            calc = SwissEphemerisCalculator()
+                            result_p2 = calc.calculate_all(
+                                year=birth_data_p2["year"],
+                                month=birth_data_p2["month"],
+                                day=birth_data_p2["day"],
+                                hour=birth_data_p2["hour"],
+                                minute=birth_data_p2["minute"],
+                                latitude=birth_data_p2["latitude"],
+                                longitude=birth_data_p2["longitude"],
+                                timezone=birth_data_p2["timezone"]
+                            )
+                            
+                            # Store in session
+                            st.session_state["chart_result_p2"] = result_p2
+                            st.session_state["birth_data_p2"] = birth_data_p2
+                            
+                            # Options
+                            col_opts1, col_opts2 = st.columns([1, 1])
+                            with col_opts1:
+                                show_syn_houses = st.checkbox(lang.get("show_houses", "Show Houses"), value=True, key="syn_houses")
+                            with col_opts2:
+                                show_syn_aspects = st.checkbox(lang.get("show_aspects", "Show Aspects"), value=True, key="syn_aspects")
+                            
+                            # Create synastry chart
+                            fig = create_synastry_chart(
+                                person1_planets=result["planets"],
+                                person1_houses=result["houses"],
+                                person1_ascendant=result["ascendant"],
+                                person1_midheaven=result["midheaven"],
+                                person2_planets=result_p2["planets"],
+                                person2_houses=result_p2["houses"],
+                                person2_ascendant=result_p2["ascendant"],
+                                person2_midheaven=result_p2["midheaven"],
+                                person1_name="You",
+                                person2_name="Partner",
+                                show_aspects=show_syn_aspects,
+                                show_houses=show_syn_houses
+                            )
+                            chart_bytes = chart_to_image(fig)
+                            st.image(chart_bytes, use_container_width=True)
+                            plt.close(fig)
+                            
+                    except Exception as e:
+                        st.error(f"Error: {str(e)}")
         else:
             st.info(lang["enter_birth"])
 
