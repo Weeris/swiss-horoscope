@@ -243,12 +243,12 @@ def render_birth_input(lang: dict, key_prefix: str = "") -> Optional[Dict]:
         birth_date = st.date_input(
             lang["birth_date"],
             value=datetime(1990, 1, 1),
-            key=f"{key_prefix}_date"
+            key=f"{key_prefix}date"
         )
     
     with col2:
-        hour = st.number_input(lang["hour"], 0, 23, 12, key=f"{key_prefix}_hour")
-        minute = st.number_input(lang["minute"], 0, 59, 0, key=f"{key_prefix}_minute")
+        hour = st.number_input(lang["hour"], 0, 23, 12, key=f"{key_prefix}hour")
+        minute = st.number_input(lang["minute"], 0, 59, 0, key=f"{key_prefix}minute")
     
     st.markdown("---")
     
@@ -258,13 +258,13 @@ def render_birth_input(lang: dict, key_prefix: str = "") -> Optional[Dict]:
         selected_city = st.selectbox(
             lang["location"],
             options=list(CITIES.keys()),
-            key=f"{key_prefix}_city"
+            key=f"{key_prefix}city"
         )
     
     city_data = CITIES[selected_city]
     
     with col2:
-        st.text_input("Timezone", value=city_data["tz"], disabled=True)
+        st.text_input("Timezone", value=city_data["tz"], disabled=True, key=f"{key_prefix}tz")
     
     return {
         "year": birth_date.year,
