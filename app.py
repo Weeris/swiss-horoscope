@@ -464,12 +464,13 @@ def calculate_synastry_compatibility(result1: Dict, result2: Dict, lang: dict, l
     """Calculate compatibility between two charts"""
     from collections import Counter
     
-    planets1 = {p["name"]: p["sign"] for p in result1["planets"]}
-    planets2 = {p["name"]: p["sign"] for p in result2["planets"]}
+    # Planets is a dict, not list - fix the iteration
+    planets1 = {name: data["sign"] for name, data in result1["planets"].items()}
+    planets2 = {name: data["sign"] for name, data in result2["planets"].items()}
     
     # Get elements for both charts
-    elements1 = [WESTERN_SIGNS.get(planets1.get(p, ""), {}).get("element", "") for p in planets1]
-    elements2 = [WESTERN_SIGNS.get(planets2.get(p, ""), {}).get("element", "") for p in planets2]
+    elements1 = [WESTERN_SIGNS.get(sign, {}).get("element", "") for sign in planets1.values()]
+    elements2 = [WESTERN_SIGNS.get(sign, {}).get("element", "") for sign in planets2.values()]
     
     elem1_count = Counter(elements1)
     elem2_count = Counter(elements2)
@@ -1136,12 +1137,12 @@ def main():
                             st.markdown("---")
                             st.subheader("💕 " + lang.get("love_potential", "Love & Relationship Potential"))
                             
-                            # Element compatibility
-                            planets1 = {p["name"]: p["sign"] for p in result["planets"]}
-                            planets2 = {p["name"]: p["sign"] for p in result_p2["planets"]}
+                            # Element compatibility - planets is already a dict
+                            planets1 = {name: data["sign"] for name, data in result["planets"].items()}
+                            planets2 = {name: data["sign"] for name, data in result_p2["planets"].items()}
                             
-                            elements1 = [WESTERN_SIGNS.get(planets1.get(p, ""), {}).get("element", "") for p in planets1]
-                            elements2 = [WESTERN_SIGNS.get(planets2.get(p, ""), {}).get("element", "") for p in planets2]
+                            elements1 = [WESTERN_SIGNS.get(sign, {}).get("element", "") for sign in planets1.values()]
+                            elements2 = [WESTERN_SIGNS.get(sign, {}).get("element", "") for sign in planets2.values()]
                             
                             # Count elements
                             from collections import Counter
