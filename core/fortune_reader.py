@@ -583,10 +583,10 @@ def generate_detailed_daily_fortune(
     recommendations = []
     
     # Based on major aspects
-    if any(a['type'] == 'Square' for a in fortune['transit_aspects'][:3]):
+    if any(a['aspect'] == 'Square' for a in fortune['transit_aspects'][:3]):
         recommendations.append("Challenge aspect detected: This is a time for growth through克服困难. Don't avoid tension - use it as fuel." if lang == "en" else "ตรวจพบมุมท้าทาย: นี่คือเวลาสำหรับการเติบโตผ่านความยากลำบาก อย่าหลีกเลี่ยงความตึงเครียด - ใช้มันเป็นเชื้อเพลิง")
     
-    if any(a['type'] == 'Trine' for a in fortune['transit_aspects'][:3]):
+    if any(a['aspect'] == 'Trine' for a in fortune['transit_aspects'][:3]):
         recommendations.append("Harmonious aspect detected: Things flow easily. This is a good day for creative pursuits and relationships." if lang == "en" else "ตรวจพบมุมกลมกลืน: สิ่งต่างๆ ไหลลื่น เป็นวันที่ดีสำหรับการสร้างสรรค์และความสัมพันธ์")
     
     if fortune['retrograde_effects']:
