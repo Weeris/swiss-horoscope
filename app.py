@@ -711,6 +711,8 @@ def render_prediction_section(result: Dict, birth_data: Dict, lang: dict, lang_c
                 with st.expander(f"**{t['planet']}** in {t['sign']} {t['degree']}{rx_indicator} → House {t['house']}"):
                     st.markdown(f"**House {t['house']}:** {t.get('house_meaning', '')}")
                     st.markdown(f"**In Sign:** {t.get('meaning', '')}")
+                    if t.get('sabian'):
+                        st.markdown(f"**✨ Sabian Symbol ({t['sign']} {t['degree']}):** _{t['sabian']}_")
             
             # Transit aspects - detailed interpretation
             if fortune.get("transit_aspects"):
@@ -720,6 +722,10 @@ def render_prediction_section(result: Dict, birth_data: Dict, lang: dict, lang_c
                     with st.expander(f"**{asp['transiting']}** ({asp['transit_sign']}) **{asp['aspect']}** **{asp['natal']}** ({asp['natal_sign']}) {exact_indicator}"):
                         st.markdown(f"**Orb:** {asp['orb']}°")
                         st.markdown(f"**House Affected:** {asp['house_affected']} - {asp.get('house_meaning', '')}")
+                        if asp.get('transit_sabian'):
+                            st.markdown(f"**✨ Transit Sabian ({asp['transit_sign']} {asp['transit_degree']}°):** _{asp['transit_sabian']}_")
+                        if asp.get('natal_sabian'):
+                            st.markdown(f"**✨ Natal Sabian ({asp['natal_sign']} {asp['natal_degree']}°):** _{asp['natal_sabian']}_")
                         st.markdown(f"_{asp.get('interpretation', '')}_")
             
             # Retrograde effects

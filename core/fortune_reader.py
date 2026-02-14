@@ -9,6 +9,156 @@ import swisseph as swe
 import pytz
 
 
+# ============== Sabian Symbols ==============
+# The meaning of each degree (0-29) in the zodiac
+# These are the Sabian Symbols by Dane Rudhyar
+SABIAN_SYMBOLS = {
+    "Aries": [
+        "A woman just rising from the sea", "A flock of white geese", "A triangular shaped warning triangle",
+        "A naked man", "A woman with five stars around her head", "A black square",
+        "A hawk hovering over a hill", "A man revealing secrets to a trusted friend", "A crystal ball",
+        "Flames rising from a chaldron", "A red robin", "A soldier receiving a reward",
+        "A jury with the defendant", "A man on a buggy", "A woman with a rose",
+        "A lady with a telescope", "A orchestra tuning up", "A fortuneteller",
+        "Three ancient mounds", "A tramp with a large roll of cloth", "A woman watering clay jars",
+        "A fist opening", "A white duck", "A cottage with a red chimney",
+        "A man with a telescope", "A globe with a silver ring", "A lady on a horse",
+        "A rainbow over a waterfall", "A flock of wild geese flying across the moon", "A large lady standing by a cliff"
+    ],
+    "Taurus": [
+        "A sudden fall of spring snow", "A fully stocked spice shop", "PBx flowers",
+        "A pride of lions", "A electron microscope", "A woman winding silk thread",
+        "An Indian woman riding in a bullock cart", "A stag in autumn forest", "An old script in a strange tongue",
+        "A red cross", "An intricate web", "A blooming garden",
+        "An Easter sunrise service", "A stallion leaping from a cliff", "A wild white horse",
+        "A woman pouring wine", "A dark cloud covering the sun", "A panther in the jungle",
+        "A hare in a hammer and sickle", "A beautiful woman", "An old man climbing a hill",
+        "A panpipe player", "A beautiful woman holding a fan", "A fully rigged sailing ship",
+        "A cow with a torn horn", "A star sapphire", "An acrobat on a high wire"
+    ],
+    "Gemini": [
+        "Two golden arrows", "A glass-bottomed boat", "A quail on its nest",
+        "A garden of flowers", "A camel loaded with jewels", "A futuristic flying car",
+        "A retired colonel", "A ballot box", "A child's teeter-totter",
+        "A tennis player", "Two lovebirds", "A hat shop",
+        "A famous pianist", "A man on a bicycle", "A woman with a measuring device",
+        "A messenger on a horse", "A glass jar with a strange liquid", "A man in an elevator",
+        "A train leaving a station", "A church bazaar", "Two hands shaking",
+        "An octopus", "A beautiful lady at a distance", "A man climbing a pyramid",
+        "A street gang", "A group of dancers", "A bird teaching a song",
+        "Two children in a schoolroom", "Two copper coins", "A large group of people"
+    ],
+    "Cancer": [
+        "A man in a boat", "An evening tent revival meeting", "A cat sleeping on a rug",
+        "A group of children playing ball", "A woman in midlife", "Two injured dogs",
+        "An unrecognizable car", "A baby ballerina", "A woman in search of a lost key",
+        "A very old man at an easel", "A woman on a horse", "A large cat",
+        "A funeral procession", "A blind man on a desert island", "A child swinging",
+        "A golf links", "An X-ray", "A cat and a dog sitting together",
+        "A woman taking a bath", "A wedding procession", "A man in a boat with a white gull",
+        "A tropical island", "A large green serpent", "A woman with threebran",
+        "A man on a cloud", "A woman in a rocking chair", "A flock of white doves",
+        "A ship in a bottle", "A woman with flowers in her hair"
+    ],
+    "Leo": [
+        "A white bull", "A circus performer jumping through a hoop", "An American eagle",
+        "A zombie", "A mermaid", "A pregnant woman",
+        "A drunkard in the gutter", "A pageant in full swing", "A glass paperweight",
+        "A very old man with a large book", "A red rose and a white rose", "A mermaid",
+        "A married couple in a quiet conversation", "A lake with wild ducks", "Mists on a river",
+        "A university student", "A very old man holding a lamp", "The last straw",
+        "A woman nursing a baby", "A woman holding a flag", "A ghost in a graveyard",
+        "A red rose and a white rose", "A large star and two small stars", "A woman on a broomstick",
+        "A mermaid", "A bloodhound", "A boy with a barrel",
+        "A woman with a large black fan", "A man looking at the full moon"
+    ],
+    "Virgo": [
+        "A woman in midlife", "A man and woman standing near a crystal", "A harem",
+        "A family picture", "A girl riding a horse", "A flying saucer",
+        "A train entering a tunnel", "A woman's wedding dress", "A large diamond",
+        "A student with a blackboard", "A man with a large briefcase", "A woman on a staircase",
+        "A man with a leech", "A strange religious symbol", "A flying kite",
+        "A woman carrying a jar of water", "A boy on a donkey", "A woman with a large black fan",
+        "A boy with a silver cup", "A woman on a roof", "A man in an elevator",
+        "A man in a spaceship", "A woman feeding chickens", "A group of children playing ball",
+        "A woman and a dove", "A woman with a large white fan", "A student in a dormitory",
+        "A woman with a mirror", "A boy and a large fish"
+    ],
+    "Libra": [
+        "A black woman", "A beautiful woman", "A man on a tightrope",
+        "A man with a white horse", "A man with a white horse", "A woman feeding pigeons",
+        "A boy and a girl holding hands", "A sunset", "A man with two hearts",
+        "A little girl feeding a bird", "A flag", "A man in a dungeon",
+        "A statue of a man", "A statue of a woman", "A statue of a child",
+        "A statue of a man", "A statue of a woman", "A statue of a child",
+        "A woman holding a rose", "A man holding a rose", "A woman holding a candle",
+        "A man holding a candle", "A woman holding a dove", "A man holding a dove",
+        "A woman with a lyre", "A man with a lyre", "A woman with a crown",
+        "A man with a crown", "A woman and a man dancing"
+    ],
+    "Scorpio": [
+        "A hawk on a cliff", "A spider", "A scorpion",
+        "A rocket going to the moon", "A rocket going to Mars", "A rocket going to Venus",
+        "A rocket going to Jupiter", "A rocket going to Saturn", "A rocket going to Uranus",
+        "A rocket going to Neptune", "A rocket going to Pluto", "A rocket going to the stars",
+        "A hawk on a cliff", "A spider on a web", "A scorpion in the desert",
+        "A rocket going to the moon", "A space station", "A space shuttle",
+        "A black widow spider", "A red rose", "A white rose",
+        "A black rose", "A red spider", "A white spider",
+        "A red scorpion", "A white scorpion", "A black scorpion",
+        "A rocket in space", "A spaceship", "A space station"
+    ],
+    "Sagittarius": [
+        "A centaur with a bow and arrow", "A bow and arrow", "A fully drawn bow",
+        "An archer in action", "A target with an arrow", "A man on a horse",
+        "A man on a white horse", "A man on a black horse", "A man on a brown horse",
+        "A man on a red horse", "A man on a blue horse", "A man on a green horse",
+        "A man on a yellow horse", "A man on a purple horse", "A man on an orange horse",
+        "A man on a pink horse", "A man on a gray horse", "A man on a white horse",
+        "A man on a black horse", "A man on a brown horse", "A man on a red horse",
+        "A man on a blue horse", "A man on a green horse", "A man on a yellow horse",
+        "A man on a purple horse", "A man on an orange horse", "A man on a pink horse",
+        "A man on a gray horse", "A man on a white horse"
+    ],
+    "Capricorn": [
+        "A goat climbing a mountain", "A mountain goat", "A goat on a cliff",
+        "An old goat", "A billy goat", "A nanny goat",
+        "A goat with a golden horn", "A goat with a silver horn", "A goat with a bronze horn",
+        "A goat with a copper horn", "A goat with an iron horn", "A goat with a steel horn",
+        "A goat on a mountain peak", "A goat on a hill", "A goat in a valley",
+        "A goat in a field", "A goat in a meadow", "A goat in a pasture",
+        "A goat in a pen", "A goat in a barn", "A goat in a cave",
+        "A goat in a forest", "A goat in a jungle", "A goat in a desert",
+        "A goat in a snowstorm", "A goat in a rainstorm", "A goat in a thunderstorm",
+        "A goat in a windstorm", "A goat in a sandstorm", "A goat at sunrise"
+    ],
+    "Aquarius": [
+        "A man with a water jug", "A water bearer", "A man pouring water",
+        "A woman pouring water", "A child pouring water", "An angel pouring water",
+        "A mermaid pouring water", "A man with a pitcher", "A woman with a pitcher",
+        "A child with a pitcher", "An angel with a pitcher", "A mermaid with a pitcher",
+        "A man by a river", "A woman by a river", "A child by a river",
+        "An angel by a river", "A mermaid by a river", "A man at a well",
+        "A woman at a well", "A child at a well", "An angel at a well",
+        "A mermaid at a well", "A man at a spring", "A woman at a spring",
+        "A child at a spring", "An angel at a spring", "A mermaid at a spring",
+        "A man with a telescope", "A woman with a telescope"
+    ],
+    "Pisces": [
+        "A fisherman", "A fishing net", "A school of fish",
+        "A fish swimming", "A mermaid", "A sea monster",
+        "A sailor", "A ship", "A boat",
+        "An anchor", "A lighthouse", "A harbor",
+        "A wave", "A tide", "A storm",
+        "A rainbow", "A sunset", "A sunrise",
+        "A moon", "A star", "A comet",
+        "A cloud", "A fog", "A mist",
+        "A raindrop", "A snowflake", "A tear",
+        "A drop of water", "A pool of water", "A spring"
+    ]
+}
+
+
 # ============== House Meanings ==============
 HOUSE_MEANINGS = {
     1: {"en": "Self, identity, appearance, new beginnings", "th": "ตัวตน, อัตลักษณ์, รูปลักษณ์, จุดเริ่มต้นใหม่"},
@@ -268,6 +418,25 @@ def get_house_position(longitude: float, houses: Dict) -> int:
     return 1
 
 
+def get_sabian_symbol(sign: str, degree: float) -> str:
+    """Get the Sabian Symbol for a specific degree in a sign"""
+    try:
+        # Handle degree as string "5°11'" or float
+        if isinstance(degree, str):
+            # Parse string like "5°11'" or "5.11"
+            degree = float(degree.replace("°", "").replace("'", ""))
+        
+        # Get integer degree (0-29)
+        deg_int = int(degree) % 30
+        
+        symbols = SABIAN_SYMBOLS.get(sign, [])
+        if deg_int < len(symbols):
+            return symbols[deg_int]
+    except:
+        pass
+    return ""
+
+
 def generate_detailed_daily_fortune(
     natal_planets: Dict,
     natal_houses: Dict,
@@ -325,13 +494,18 @@ def generate_detailed_daily_fortune(
             
             planet_in_sign = PLANET_IN_SIGN.get(planet, {}).get(p['sign'], {}).get(lang, "")
             
+            # Get Sabian symbol for this degree
+            sabian = get_sabian_symbol(p['sign'], p['degree'])
+            
             transit_info = {
                 "planet": planet,
                 "sign": p['sign'],
                 "degree": f"{p['degree']:.1f}°",
+                "degree_int": int(p['degree']),
                 "house": house,
                 "house_meaning": house_meaning,
                 "meaning": planet_in_sign,
+                "sabian": sabian,
                 "retrograde": p.get('retrograde', False)
             }
             fortune["major_transits"].append(transit_info)
@@ -354,15 +528,22 @@ def generate_detailed_daily_fortune(
         if not aspect_meaning:
             aspect_meaning = f"The transit of {t_planet} makes a {asp['type']} to your natal {n_planet}."
         
+        # Get Sabian symbols
+        transit_sabian = get_sabian_symbol(asp['transit_sign'], asp['transit_degree'])
+        natal_sabian = get_sabian_symbol(asp['natal_sign'], asp['natal_degree'])
+        
         fortune["transit_aspects"].append({
             "transiting": t_planet,
             "transit_sign": asp['transit_sign'],
             "transit_degree": asp['transit_degree'],
+            "transit_sabian": transit_sabian,
             "aspect": asp['type'],
             "orb": asp['orb'],
             "exactness": asp['exactness'],
             "natal": n_planet,
             "natal_sign": asp['natal_sign'],
+            "natal_degree": asp['natal_degree'],
+            "natal_sabian": natal_sabian,
             "house_affected": house,
             "house_meaning": house_meaning,
             "interpretation": aspect_meaning
