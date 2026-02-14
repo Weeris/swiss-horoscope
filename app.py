@@ -15,7 +15,7 @@ from core.chart_wheel import (
 )
 from core.interactive_chart import create_interactive_chart_wheel
 from core.birth_chart_reading import generate_birth_chart_reading
-from core.fortune_reader import generate_daily_fortune, generate_monthly_outlook, generate_yearly_outlook
+from core.fortune_reader import generate_detailed_daily_fortune, generate_monthly_outlook, generate_yearly_outlook
 
 
 # ============== Page Config ==============
@@ -679,30 +679,66 @@ def render_prediction_section(result: Dict, birth_data: Dict, lang: dict, lang_c
         st.subheader("📅 " + lang.get("daily_fortune", "Daily Fortune"))
         
         with st.spinner("Reading your daily fortune..."):
-            fortune = generate_daily_fortune(planets, asc, birth_data["timezone"], lang_code)
+            # Use detailed fortune generator
+            fortune = generate_detailed_daily_fortune(
+                planets, houses, asc, 
+                birth_data["timezone"], lang_code
+            )
             
+            # Overview with more detail
             overview_label = lang.get('today_overview', "Today's Overview")
             st.markdown(f"### {overview_label}")
-            st.write(fortune["overview"])
+            st.markdown(f"_{fortune['overview']}_")
+            st.markdown(f"**Day:** {fortune.get('day_name', '')}")
             
-            # Lucky elements
+            # Lucky elements - enhanced display
             lucky = fortune.get("lucky", {})
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                st.metric(f"🎨 {lang.get('color', 'Color')}", lucky.get("color", "-"))
-            with col2:
-                st.metric(f"🔢 {lang.get('number', 'Number')}", lucky.get("number", "-"))
-            with col3:
-                st.metric(f"📅 {lang.get('lucky_day', 'Lucky Day')}", lucky.get("day", "-"))
-            with col4:
-                st.metric(f"💫 {lang.get('element_dominant', 'Element')}", lucky.get("element", "-"))
+            st.markdown("### 🍀 Lucky Elements")
+            lucky_cols = st.columns(4)
+            with lucky_cols[0]:
+                st.markdown(f"**🎨 Color:** {lucky.get('color', '-')}")
+            with lucky_cols[1]:
+                st.markdown(f"**🔢 Number:** {lucky.get('number', '-')}")
+            with lucky_cols[2]:
+                st.markdown(f"**📅 Lucky Day:** {lucky.get('day', '-')}")
+            with lucky_cols[3]:
+                st.markdown(f"**💫 Element:** {lucky.get('element', '-')}")
             
-            # Key transits
-            st.markdown(f"### {lang.get('key_transits', 'Key Transits')}")
-            for t in fortune.get("transits", [])[:5]:
-                st.markdown(f"**{t['planet']}** in {t['sign']} {t['degree']}")
-                if t.get("meaning"):
-                    st.caption(t["meaning"])
+            # Major transits with house positions
+            st.markdown("### 🪐 Major Transits Today")
+            for t in fortune.get("major_transits", []):
+                rx_indicator = " 🔄" if t.get("retrograde") else ""
+                with st.expander(f"**{t['planet']}** in {t['sign']} {t['degree']}{rx_indicator} → House {t['house']}"):
+                    st.markdown(f"**House {t['house']}:** {t.get('house_meaning', '')}")
+                    st.markdown(f"**In Sign:** {t.get('meaning', '')}")
+            
+            # Transit aspects - detailed interpretation
+            if fortune.get("transit_aspects"):
+                st.markdown("### 🔗 Transit-Natal Aspects")
+                for asp in fortune.get("transit_aspects", [])[:6]:
+                    exact_indicator = "🎯" if asp.get('exactness') == 'exact' else ""
+                    with st.expander(f"**{asp['transiting']}** ({asp['transit_sign']}) **{asp['aspect']}** **{asp['natal']}** ({asp['natal_sign']}) {exact_indicator}"):
+                        st.markdown(f"**Orb:** {asp['orb']}°")
+                        st.markdown(f"**House Affected:** {asp['house_affected']} - {asp.get('house_meaning', '')}")
+                        st.markdown(f"_{asp.get('interpretation', '')}_")
+            
+            # Retrograde effects
+            if fortune.get("retrograde_effects"):
+                st.markdown("### 🔄 Retrograde Planets")
+                for rx in fortune.get("retrograde_effects", []):
+                    st.markdown(f"**{rx['planet']}:** {rx.get('meaning', '')}")
+            
+            # House activations
+            if fortune.get("house_activations"):
+                st.markdown("### 🏠 Activated Houses")
+                for ha in fortune.get("house_activations", []):
+                    st.markdown(f"**House {ha['house']}:** {ha.get('meaning', '')}")
+            
+            # Personalized recommendations
+            if fortune.get("recommendations"):
+                st.markdown("### 💡 Recommendations")
+                for rec in fortune.get("recommendations", []):
+                    st.markdown(f"- {rec}")
     
     # ===== TAB 2: MONTHLY =====
     with pred_tabs[1]:
