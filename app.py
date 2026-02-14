@@ -820,12 +820,6 @@ def render_prediction_section(result: Dict, birth_data: Dict, lang: dict, lang_c
                     theme = q.get("theme", "")
                     with st.expander(f"**{period}** - Jupiter in {jupiter}, Saturn in {saturn}"):
                         st.write(theme)
-                    st.markdown("**Q3 (Jul-Sep):** " + q3[0].get('theme', ''))
-                
-                # Q4
-                q4 = [q for q in quarters if 'Q4' in q.get('period', '')]
-                if q4:
-                    st.markdown("**Q4 (Oct-Dec):** " + q4[0].get('theme', ''))
             
             # Advice
             st.markdown(f"### 💡 {lang.get('advice', 'Advice')}")
