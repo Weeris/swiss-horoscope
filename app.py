@@ -97,6 +97,23 @@ LANG = {
         "person2": "Person 2",
         "enter_person2": "Enter second person's birth details",
         "compare": "Compare Charts",
+        # New keys for prediction sub-tabs
+        "tab_sun": "☀️ Sun Sign",
+        "tab_moon": "🌙 Moon Sign",
+        "tab_rising": "↑ Rising Sign",
+        "tab_planetary": "🪐 Planetary",
+        # Synastry
+        "element_compatibility": "Element Compatibility",
+        "sign_compatibility": "Sign Compatibility",
+        "compatibility_percentage": "Compatibility %",
+        "love_potential": "Love Potential",
+        "strong_match": "Strong Match",
+        "balanced_match": "Balanced",
+        "challenging_match": "Challenging",
+        # Birth Chart UI
+        "element_dist": "Element Distribution",
+        "quick_summary": "Quick Summary",
+        "chart_details": "Chart Details",
     },
     "th": {
         "title": "🔮 ดวงชะตาสวิส",
@@ -168,77 +185,23 @@ LANG = {
         "person2": "คนที่ 2",
         "enter_person2": "กรอกข้อมูลวันเกิดคนที่ 2",
         "compare": "เปรียบเทียบดวง",
-    },
-    "zh": {
-        "title": "🔮 瑞士星盘",
-        "subtitle": "使用瑞士星历表的高精度占星术",
-        "tab_input": "📋 输入",
-        "tab_chart": "⭐ 星盘",
-        "tab_prediction": "🔮 预测",
-        "birth_info": "出生信息",
-        "birth_date": "出生日期",
-        "birth_time": "出生时间",
-        "hour": "小时",
-        "minute": "分钟",
-        "location": "出生地点",
-        "select_city": "选择城市",
-        "calculate": "计算星盘",
-        "your_chart": "你的星盘",
-        "sun_sign": "太阳星座",
-        "planets": "行星位置",
-        "ascendant": "上升星座",
-        "midheaven": "中天",
-        "houses": "宫位",
-        "aspects": "相位",
-        "sign": "星座",
-        "degree": "度数",
-        "house": "宫",
-        "retrograde": "逆行",
-        "enter_birth": "输入您的出生信息以查看星盘",
-        "elements": "元素",
-        "chart_viz": "星盘摘要",
-        "daily_prediction": "每日预测",
-        "weekly_prediction": "每周预测",
-        "birth_chart_reading": "星盘解读",
-        "your_destiny": "你的命运",
-        "sun_sign_reading": "太阳星座解读",
-        "moon_sign_reading": "月亮星座解读",
-        "rising_sign_reading": "上升星座解读",
-        "planetary_emphasis": "行星重点",
-        "life_themes": "人生主题",
-        "key_aspects": "关键相位",
-        "life_theme": "你的人生主题",
-        "strengths": "优势",
-        "challenges": "挑战",
-        "core_identity": "核心身份",
-        "element_dominant": "主导元素",
-        "daily_fortune": "每日运势",
-        "monthly_outlook": "每月运势",
-        "yearly_outlook": "年度运势",
-        "today_overview": "今日概览",
-        "key_transits": "关键星象",
-        "transit_aspects": "推运相位",
-        "lucky_elements": "幸运元素",
-        "color": "颜色",
-        "number": "数字",
-        "lucky_day": "幸运日",
-        "month_theme": "月度主题",
-        "highlights": "亮点",
-        "advice": "建议",
-        "major_transits": "主要推运",
-        "quarters": "季度概览",
-        "tab_transit": "🚀 推运",
-        "tab_synastry": "💕 合盘",
-        "chart_wheel": "星盘图",
-        "show_houses": "显示宫位",
-        "show_aspects": "显示相位",
-        "transit_overlay": "推运叠加",
-        "current_transits": "当前星象",
-        "synastry": "合盘分析",
-        "person1": "第一人",
-        "person2": "第二人",
-        "enter_person2": "输入第二人的出生信息",
-        "compare": "对比星盘",
+        # New keys for prediction sub-tabs
+        "tab_sun": "☀️ ราศีเกิด",
+        "tab_moon": "🌙 ดวงจันทร์",
+        "tab_rising": "↑ ราศีขึ้น",
+        "tab_planetary": "🪐 ดาวเคราะห์",
+        # Synastry
+        "element_compatibility": "ความเข้ากันได้ของธาตุ",
+        "sign_compatibility": "ความเข้ากันได้ของราศี",
+        "compatibility_percentage": "เปอร์เซ็นต์ความเข้ากัน",
+        "love_potential": "โอกาสความรัก",
+        "strong_match": "เข้ากันดี",
+        "balanced_match": "สมดุล",
+        "challenging_match": "ท้าทาย",
+        # Birth Chart UI
+        "element_dist": "การกระจายตัวของธาตุ",
+        "quick_summary": "สรุปโดยย่อ",
+        "chart_details": "รายละเอียดดวงชะตา",
     }
 }
 
@@ -270,6 +233,14 @@ WESTERN_SIGNS = {
     "Capricorn": {"element": "Earth", "quality": "Cardinal", "ruler": "Saturn", "traits_en": "Ambitious, disciplined, patient", "traits_th": "มีความทะเยอทะยาน, มีระเบียบ, อดทน"},
     "Aquarius": {"element": "Air", "quality": "Fixed", "ruler": "Uranus", "traits_en": "Independent, original, humanitarian", "traits_th": "เป็นตัวของตัวเอง, สร้างสรรค์, มีน้ำใจ"},
     "Pisces": {"element": "Water", "quality": "Mutable", "ruler": "Neptune", "traits_en": "Compassionate, artistic, intuitive", "traits_th": "เมตตา, มีศิลปะ, มีสัญชาตญาณ"},
+}
+
+# Element signs mapping for compatibility
+ELEMENT_SIGNS = {
+    "fire": ["Aries", "Leo", "Sagittarius"],
+    "earth": ["Taurus", "Virgo", "Capricorn"],
+    "air": ["Gemini", "Libra", "Aquarius"],
+    "water": ["Cancer", "Scorpio", "Pisces"],
 }
 
 ELEMENTS = {
@@ -365,33 +336,60 @@ def render_birth_input(lang: dict, key_prefix: str = "") -> Optional[Dict]:
 
 
 def render_birth_chart(result: Dict, lang: dict):
-    """Render birth chart section"""
+    """Render birth chart section with improved UI"""
     st.subheader(lang["your_chart"])
     
     # Date/time
     st.markdown(f"**{result['subject']['date_time']}** | {result['subject']['timezone']}")
     
-    # Sun sign prominently
+    # Key metrics in columns
+    col1, col2, col3, col4 = st.columns(4)
+    
+    # Sun sign
     sun = result['planets']['Sun']
-    st.info(f"### 🌟 {lang['sun_sign']}: {sun['sign']} {sun['degree']:.1f}°")
-    
-    # Ascendant & Midheaven
-    col1, col2 = st.columns(2)
     with col1:
-        asc = result["ascendant"]
-        st.metric(f"↑ {lang['ascendant']}", f"{asc['sign']} {asc['degree']:.1f}°")
-    with col2:
-        mc = result["midheaven"]
-        st.metric(f"☰ {lang['midheaven']}", f"{mc['sign']} {mc['degree']:.1f}°")
+        st.metric(f"☀️ {lang['sun_sign']}", f"{sun['sign']}", f"{sun['degree']:.1f}°")
     
-    # Elements
+    # Moon sign (new)
+    moon = result['planets'].get('Moon', {})
+    with col2:
+        st.metric(f"🌙 Moon Sign", f"{moon.get('sign', '-')}", f"{moon.get('degree', 0):.1f}°" if moon.get('degree') else None)
+    
+    # Ascendant
+    asc = result["ascendant"]
+    with col3:
+        st.metric(f"↑ {lang['ascendant']}", f"{asc['sign']}", f"{asc['degree']:.1f}°")
+    
+    # Midheaven
+    mc = result["midheaven"]
+    with col4:
+        st.metric(f"☰ {lang['midheaven']}", f"{mc['sign']}", f"{mc['degree']:.1f}°")
+    
+    # Element distribution
     st.markdown("---")
     elements = calculate_elements(result["planets"])
+    
+    # Visual element distribution with bar chart
+    st.subheader(lang.get("element_dist", "Element Distribution"))
+    
+    # Create data for bar chart
+    elem_data = {"Elements": [elements["Fire"], elements["Earth"], elements["Air"], elements["Water"]]}
+    elem_df = {"Fire 🔥": elements["Fire"], "Earth 🌍": elements["Earth"], "Air 💨": elements["Air"], "Water 💧": elements["Water"]}
+    
+    # Display as metrics first
     cols = st.columns(4)
     for i, (elem, count) in enumerate(elements.items()):
         emoji = ELEMENTS[elem]["color"]
         with cols[i]:
             st.metric(f"{emoji} {elem}", f"{count}/10")
+    
+    # Show bar chart below
+    st.bar_chart(elem_df, horizontal=True, color=["#FF6B6B", "#8B7355", "#87CEEB", "#4ECDC4"])
+    
+    # Quick summary
+    dominant_element = max(elements, key=elements.get)
+    dominant_count = elements[dominant_element]
+    st.info(f"✨ **{lang.get('quick_summary', 'Quick Summary')}**: Your dominant element is **{dominant_element}** ({dominant_count}/10 planets)")
 
 
 def render_planets(planets: Dict, lang: dict):
@@ -545,7 +543,7 @@ def render_thai_prediction(year: int, month: int, day: int, planets: Dict, lang:
 
 
 def render_prediction_section(result: Dict, birth_data: Dict, lang: dict, lang_code: str):
-    """Render prediction tab"""
+    """Render prediction tab with sub-tabs"""
     planets = result["planets"]
     asc = result["ascendant"]
     houses = result.get("houses", {})
@@ -554,53 +552,180 @@ def render_prediction_section(result: Dict, birth_data: Dict, lang: dict, lang_c
     month = birth_data["month"]
     day = birth_data["day"]
     
-    # ===== BIRTH CHART READING (Destiny) =====
-    st.subheader("🔮 " + lang.get("birth_chart_reading", "Birth Chart Reading"))
+    # Create prediction sub-tabs
+    pred_tabs = st.tabs([
+        "🔮 " + lang.get("birth_chart_reading", "Birth Chart Reading"),
+        lang.get("tab_sun", "☀️ Sun Sign"),
+        lang.get("tab_moon", "🌙 Moon Sign"),
+        lang.get("tab_rising", "↑ Rising Sign"),
+        lang.get("tab_planetary", "🪐 Planetary")
+    ])
     
-    with st.spinner("Generating your destiny reading..."):
-        reading = generate_birth_chart_reading(planets, houses, asc, aspects, lang_code)
+    # ===== TAB 1: BIRTH CHART READING (Destiny) =====
+    with pred_tabs[0]:
+        st.subheader("🔮 " + lang.get("birth_chart_reading", "Birth Chart Reading"))
         
-        for section in reading["sections"]:
-            if section.get("title"):
-                st.markdown(f"### {section['title']}")
+        with st.spinner("Generating your destiny reading..."):
+            reading = generate_birth_chart_reading(planets, houses, asc, aspects, lang_code)
             
-            # Display planet meanings
-            if "planets" in section:
-                for p in section["planets"]:
-                    st.markdown(f"**{p['name']} in {p['sign']}**")
-                    meaning = p.get("meaning", {})
-                    core = meaning.get("core", "")
-                    if core:
-                        st.write(core)
-                    strengths = meaning.get("strengths", "")
-                    if strengths:
-                        st.caption(f"✨ {lang.get('strengths', 'Strengths')}: {strengths}")
-                    challenges = meaning.get("challenges", "")
-                    if challenges:
-                        st.caption(f"⚠️ {lang.get('challenges', 'Challenges')}: {challenges}")
-                    st.markdown("")
-            
-            # Display life theme
-            if section.get("theme"):
-                st.info(f"✨ **{lang.get('life_theme', 'Your Life Theme')}**: {section['theme']}")
-            
-            # Display aspects
-            if "aspects" in section:
-                for asp in section["aspects"][:5]:  # Limit to 5
-                    st.markdown(f"**{asp['p1']}** {asp['type']} **{asp['p2']}**")
-                    if asp.get("meaning"):
-                        st.write(asp["meaning"])
-                    st.markdown("")
+            for section in reading["sections"]:
+                if section.get("title"):
+                    st.markdown(f"### {section['title']}")
+                
+                # Display planet meanings
+                if "planets" in section:
+                    for p in section["planets"]:
+                        st.markdown(f"**{p['name']} in {p['sign']}**")
+                        meaning = p.get("meaning", {})
+                        core = meaning.get("core", "")
+                        if core:
+                            st.write(core)
+                        strengths = meaning.get("strengths", "")
+                        if strengths:
+                            st.caption(f"✨ {lang.get('strengths', 'Strengths')}: {strengths}")
+                        challenges = meaning.get("challenges", "")
+                        if challenges:
+                            st.caption(f"⚠️ {lang.get('challenges', 'Challenges')}: {challenges}")
+                        st.markdown("")
+                
+                # Display life theme
+                if section.get("theme"):
+                    st.info(f"✨ **{lang.get('life_theme', 'Your Life Theme')}**: {section['theme']}")
+                
+                # Display aspects
+                if "aspects" in section:
+                    for asp in section["aspects"][:5]:  # Limit to 5
+                        st.markdown(f"**{asp['p1']}** {asp['type']} **{asp['p2']}**")
+                        if asp.get("meaning"):
+                            st.write(asp["meaning"])
+                        st.markdown("")
+    
+    # ===== TAB 2: SUN SIGN =====
+    with pred_tabs[1]:
+        st.subheader(lang.get("tab_sun", "☀️ Sun Sign"))
+        
+        # Get Sun sign
+        sun = planets.get("Sun", {})
+        sun_sign = sun.get("sign", "Aries")
+        sun_data = WESTERN_SIGNS.get(sun_sign, {})
+        
+        # Get traits based on language
+        if lang_code == "th":
+            sun_traits = sun_data.get("traits_th", "")
+            sun_element = sun_data.get("element", "Fire")
+            sun_quality = sun_data.get("quality", "Cardinal")
+        else:
+            sun_traits = sun_data.get("traits_en", "")
+            sun_element = sun_data.get("element", "Fire")
+            sun_quality = sun_data.get("quality", "Cardinal")
+        
+        ruler = sun_data.get("ruler", "Mars")
+        
+        st.markdown(f"""
+### ☀️ {sun_sign} ({ruler} rules)
+**Element:** {sun_element} | **Quality:** {sun_quality}
+
+**Traits:** {sun_traits}
+""")
+        
+        # Sun sign reading
+        st.markdown("---")
+        render_western_prediction(planets, asc, lang, lang_code)
+    
+    # ===== TAB 3: MOON SIGN =====
+    with pred_tabs[2]:
+        st.subheader(lang.get("tab_moon", "🌙 Moon Sign"))
+        
+        # Get Moon sign
+        moon = planets.get("Moon", {})
+        moon_sign = moon.get("sign", "Cancer")
+        moon_data = WESTERN_SIGNS.get(moon_sign, {})
+        
+        if lang_code == "th":
+            moon_traits = moon_data.get("traits_th", "")
+            moon_element = moon_data.get("element", "Water")
+        else:
+            moon_traits = moon_data.get("traits_en", "")
+            moon_element = moon_data.get("element", "Water")
+        
+        st.markdown(f"""
+### 🌙 {moon_sign} (Ruled by Moon)
+**Element:** {moon_element}
+
+**Traits:** {moon_traits}
+""")
+        
+        # Moon sign meaning
+        st.markdown("---")
+        st.markdown("#### 🌙 " + lang.get("moon_sign_reading", "Moon Sign Reading"))
+        if lang_code == "th":
+            st.write(f"ดวงจันทร์ใน{round(len(moon_sign), 0) if len(moon_sign) > 0 else 'Cancer'} แสดงถึงอารมณ์และความต้องการภายในของคุณ คุณมีความรู้สึกอ่อนไหวและใส่ใจคนรอบข้าง")
+        else:
+            st.write(f"Your Moon in {moon_sign} reveals your emotional nature and inner needs. You are sensitive and caring, with strong instincts.")
+    
+    # ===== TAB 4: RISING SIGN =====
+    with pred_tabs[3]:
+        st.subheader(lang.get("tab_rising", "↑ Rising Sign"))
+        
+        asc_sign = asc.get("sign", "Aries")
+        asc_data = WESTERN_SIGNS.get(asc_sign, {})
+        
+        if lang_code == "th":
+            asc_traits = asc_data.get("traits_th", "")
+            asc_element = asc_data.get("element", "Fire")
+        else:
+            asc_traits = asc_data.get("traits_en", "")
+            asc_element = asc_data.get("element", "Fire")
+        
+        st.markdown(f"""
+### ↑ {asc_sign} (Rising Sign)
+**Element:** {asc_element}
+
+**Traits:** {asc_traits}
+""")
+        
+        # Rising sign meaning
+        st.markdown("---")
+        st.markdown("#### ↑ " + lang.get("rising_sign_reading", "Rising Sign Reading"))
+        if lang_code == "th":
+            st.write(f"ราศีขึ้น (Ascendant) ใน{asc_sign} แสดงถึงภาพลักษณ์ที่คุณแสดงออกต่อโลกภายนอก คนอื่นมักจะเห็นคุณในแบบที่คุณปรากฏตัว")
+        else:
+            st.write(f"Your Rising Sign (Ascendant) in {asc_sign} represents how you appear to others and your first impression. It's your outer self and social mask.")
+    
+    # ===== TAB 5: PLANETARY POSITIONS =====
+    with pred_tabs[4]:
+        st.subheader(lang.get("tab_planetary", "🪐 Planetary Positions"))
+        
+        # Show all planetary positions in a clean list
+        planet_order = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", 
+                        "Saturn", "Uranus", "Neptune", "Pluto", "North Node", "South Node"]
+        
+        # Use columns for planet positions
+        cols = st.columns(3)
+        
+        for i, planet in enumerate(planet_order):
+            if planet in planets:
+                p = planets[planet]
+                with cols[i % 3]:
+                    retro = " (R)" if p.get("retrograde") else ""
+                    st.metric(f"🪐 {planet}", f"{p['sign']} {p['degree']:.1f}°{retro}")
+        
+        # Also show as a table
+        st.markdown("---")
+        st.markdown("#### 📋 " + lang.get("chart_details", "Chart Details"))
+        
+        data = []
+        for planet in planet_order:
+            if planet in planets:
+                p = planets[planet]
+                retro = "Yes" if p.get("retrograde") else "No"
+                data.append({"Planet": planet, "Sign": p["sign"], "Degree": f"{p['degree']:.1f}°", "Retrograde": retro})
+        
+        st.table(data)
     
     st.markdown("---")
     
-    # ===== WESTERN PREDICTION =====
-    render_western_prediction(planets, asc, lang, lang_code)
-    
-    st.markdown("---")
-    
-    # ===== DAILY FORTUNE =====
-    st.markdown("---")
+    # ===== DAILY FORTUNE (below sub-tabs) =====
     st.subheader("📅 " + lang.get("daily_fortune", "Daily Fortune"))
     
     with st.spinner("Reading your daily fortune..."):
@@ -685,27 +810,14 @@ def render_prediction_section(result: Dict, birth_data: Dict, lang: dict, lang_c
     # Thai prediction (if Thai lang)
     if lang_code == "th":
         render_thai_prediction(year, month, day, planets, lang)
-    
-    # Chart summary
-    st.markdown("---")
-    st.subheader(lang.get("chart_viz", "Chart Summary"))
-    
-    # Quick table
-    data = []
-    for planet in ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn"]:
-        if planet in planets:
-            p = planets[planet]
-            data.append({"Planet": planet, "Sign": p["sign"], "Degree": f"{p['degree']:.1f}°"})
-    
-    st.table(data)
 
 
 # ============== Main App ==============
 def main():
     """Main application"""
     # Language selector
-    lang_code = st.sidebar.selectbox("Language", ["en", "th", "zh"], 
-                                      format_func=lambda x: {"en": "English", "th": "ไทย", "zh": "中文"}[x])
+    lang_code = st.sidebar.selectbox("Language", ["en", "th"], 
+                                      format_func=lambda x: {"en": "English", "th": "ไทย"}[x])
     lang = get_lang(lang_code)
     
     render_header(lang)
@@ -907,6 +1019,74 @@ def main():
                             st.image(chart_bytes, use_container_width=True)
                             plt.close(fig)
                             
+                            # === SYNASTRY COMPATIBILITY ANALYSIS ===
+                            st.markdown("---")
+                            st.subheader("💕 " + lang.get("love_potential", "Love & Relationship Potential"))
+                            
+                            # Element compatibility
+                            planets1 = {p["name"]: p["sign"] for p in result["planets"]}
+                            planets2 = {p["name"]: p["sign"] for p in result_p2["planets"]}
+                            
+                            elements1 = [WESTERN_SIGNS.get(planets1.get(p, ""), {}).get("element", "") for p in planets1]
+                            elements2 = [WESTERN_SIGNS.get(planets2.get(p, ""), {}).get("element", "") for p in planets2]
+                            
+                            # Count elements
+                            from collections import Counter
+                            elem1_count = Counter(elements1)
+                            elem2_count = Counter(elements2)
+                            
+                            # Compatibility calculation
+                            compat_score = 50  # Base score
+                            
+                            # Fire + Fire = strong
+                            if elem1_count.get("Fire", 0) + elem2_count.get("Fire", 0) >= 3:
+                                compat_score += 20
+                                st.success("🔥 " + lang.get("strong_match", "Strong Match") + " - Fire energy flows well together!")
+                            # Fire + Water = challenging
+                            elif (elem1_count.get("Fire", 0) > 0 and elem1_count.get("Water", 0) > 0) or (elem2_count.get("Fire", 0) > 0 and elem2_count.get("Water", 0) > 0):
+                                compat_score -= 10
+                                st.warning("💧 " + lang.get("challenging_match", "Challenging") + " - Fire and Water need balance.")
+                            # Earth + Water = deep connection
+                            elif elem1_count.get("Earth", 0) + elem2_count.get("Earth", 0) >= 2 and elem1_count.get("Water", 0) + elem2_count.get("Water", 0) >= 2:
+                                compat_score += 15
+                                st.success("🌊 " + lang.get("balanced_match", "Balanced") + " - Deep emotional connection!")
+                            # Air + Air = mental connection
+                            elif elem1_count.get("Air", 0) + elem2_count.get("Air", 0) >= 3:
+                                compat_score += 15
+                                st.success("💨 " + lang.get("strong_match", "Strong Match") + " - Great mental connection!")
+                            else:
+                                compat_score += 10
+                                st.info("⚖️ " + lang.get("balanced_match", "Balanced") + " - Complementary energies.")
+                            
+                            # Key aspects analysis
+                            st.markdown("#### " + lang.get("key_aspects_label", "Key Planetary Aspects"))
+                            
+                            key_pairs = [
+                                ("Sun", "Moon", "sun_moon"),
+                                ("Venus", "Mars", "venus_mars"),
+                                ("Sun", "Venus", "sun_venus"),
+                                ("Moon", "Mars", "moon_mars"),
+                                ("Moon", "Venus", "moon_venus")
+                            ]
+                            
+                            for p1, p2, key in key_pairs:
+                                if p1 in planets1 and p2 in planets2:
+                                    st.write(f"**{p1} ({planets1[p1]})** + **{p2} ({planets2[p2]})**")
+                            
+                            # Compatibility percentage
+                            st.markdown("---")
+                            col1, col2, col3 = st.columns(3)
+                            with col1:
+                                st.metric(lang.get("compatibility_percentage", "Compatibility"), f"{min(compat_score, 99)}%")
+                            with col2:
+                                # Sun-Moon aspect (emotional foundation)
+                                if "Sun" in planets1 and "Moon" in planets2:
+                                    st.metric("Sun-Moon", f"{planets1['Sun']} → {planets2['Moon']}")
+                            with col3:
+                                # Venus-Mars aspect (attraction)
+                                if "Venus" in planets1 and "Mars" in planets2:
+                                    st.metric("Venus-Mars", f"{planets1['Venus']} → {planets2['Mars']}")
+                                    
                     except Exception as e:
                         st.error(f"Error: {str(e)}")
         else:
